@@ -2,64 +2,79 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, User, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const blogCategories = ['All', 'Competition', 'Technical', 'Outreach', 'Team Updates'];
+const blogCategories = [
+  'All',
+  'Competition',
+  'Technical',
+  'Outreach',
+  'Team Updates',
+];
 
 const placeholderBlogs = [
   {
-    title: "Regional Championship Recap: Our Journey to Victory",
-    excerpt: "A detailed breakdown of our performance at the Northern Valley Regional Championship and the lessons we learned along the way.",
-    category: "Competition",
-    author: "Alex Johnson",
-    date: "2024-02-15",
-    readTime: "5 min read",
-    featured: true
+    slug: 'regional-championship-recap',
+    title: 'Regional Championship Recap: Our Journey to Victory',
+    excerpt:
+      'A detailed breakdown of our performance at the Northern Valley Regional Championship and the lessons we learned along the way.',
+    category: 'Competition',
+    author: 'Alex Johnson',
+    date: '2024-02-15',
+    readTime: '5 min read',
+    featured: true,
   },
   {
-    title: "Building Our Autonomous System: A Technical Deep Dive",
-    excerpt: "How we developed our advanced autonomous routines using computer vision and PID control systems.",
-    category: "Technical", 
-    author: "Sarah Chen",
-    date: "2024-02-08",
-    readTime: "8 min read",
-    featured: false
+    slug: 'autonomous-system-deep-dive',
+    title: 'Building Our Autonomous System: A Technical Deep Dive',
+    excerpt:
+      'How we developed our advanced autonomous routines using computer vision and PID control systems.',
+    category: 'Technical',
+    author: 'Sarah Chen',
+    date: '2024-02-08',
+    readTime: '8 min read',
+    featured: false,
   },
   {
-    title: "STEM Outreach at Lincoln Elementary",
-    excerpt: "Our team visited Lincoln Elementary to inspire the next generation of engineers and programmers.",
-    category: "Outreach",
-    author: "Emma Thompson", 
-    date: "2024-01-28",
-    readTime: "4 min read",
-    featured: false
+    title: 'STEM Outreach at Lincoln Elementary',
+    excerpt:
+      'Our team visited Lincoln Elementary to inspire the next generation of engineers and programmers.',
+    category: 'Outreach',
+    author: 'Emma Thompson',
+    date: '2024-01-28',
+    readTime: '4 min read',
+    featured: false,
   },
   {
-    title: "Season Kick-off: New Challenges Ahead",
-    excerpt: "Our preparation strategy for the new FTC season and the exciting challenges that await us.",
-    category: "Team Updates",
-    author: "David Kim",
-    date: "2024-01-15",
-    readTime: "3 min read",
-    featured: false
+    title: 'Season Kick-off: New Challenges Ahead',
+    excerpt:
+      'Our preparation strategy for the new FTC season and the exciting challenges that await us.',
+    category: 'Team Updates',
+    author: 'David Kim',
+    date: '2024-01-15',
+    readTime: '3 min read',
+    featured: false,
   },
   {
-    title: "Mechanical Design Process: From Concept to Reality", 
-    excerpt: "A behind-the-scenes look at our mechanical design process and the tools we use to bring ideas to life.",
-    category: "Technical",
-    author: "Marcus Rodriguez",
-    date: "2024-01-10",
-    readTime: "6 min read",
-    featured: false
+    title: 'Mechanical Design Process: From Concept to Reality',
+    excerpt:
+      'A behind-the-scenes look at our mechanical design process and the tools we use to bring ideas to life.',
+    category: 'Technical',
+    author: 'Marcus Rodriguez',
+    date: '2024-01-10',
+    readTime: '6 min read',
+    featured: false,
   },
   {
-    title: "Community Robotics Workshop Success",
-    excerpt: "Over 50 students participated in our weekend robotics workshop, learning programming and engineering basics.",
-    category: "Outreach",
-    author: "Zoe Williams",
-    date: "2023-12-20",
-    readTime: "4 min read",
-    featured: false
-  }
+    title: 'Community Robotics Workshop Success',
+    excerpt:
+      'Over 50 students participated in our weekend robotics workshop, learning programming and engineering basics.',
+    category: 'Outreach',
+    author: 'Zoe Williams',
+    date: '2023-12-20',
+    readTime: '4 min read',
+    featured: false,
+  },
 ];
 
 const Blogs = () => {
@@ -71,15 +86,16 @@ const Blogs = () => {
           <h1 className="text-5xl font-bold text-foreground mb-6">Team Blog</h1>
           <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-8" />
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Follow our journey through competitions, technical challenges, outreach activities, 
-            and everything that makes our FTC experience extraordinary.
+            Follow our journey through competitions, technical challenges,
+            outreach activities, and everything that makes our FTC experience
+            extraordinary.
           </p>
         </div>
 
         {/* Category Filter */}
         <div className="flex flex-wrap gap-3 justify-center mb-12">
-          {blogCategories.map((category) => (
-            <Button 
+          {blogCategories.map(category => (
+            <Button
               key={category}
               variant={category === 'All' ? 'default' : 'outline'}
               className="rounded-full"
@@ -91,17 +107,23 @@ const Blogs = () => {
 
         {/* Featured Post */}
         <div className="mb-16">
-          <h2 className="text-2xl font-semibold text-foreground mb-6">Featured Post</h2>
+          <h2 className="text-2xl font-semibold text-foreground mb-6">
+            Featured Post
+          </h2>
           <Card className="overflow-hidden hover:shadow-xl transition-all duration-300">
             <div className="grid lg:grid-cols-2">
               <div className="aspect-video lg:aspect-auto bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                <span className="text-muted-foreground text-lg">Featured Image</span>
+                <span className="text-muted-foreground text-lg">
+                  Featured Image
+                </span>
               </div>
               <CardContent className="p-8 flex flex-col justify-center">
                 <Badge className="mb-4 w-fit bg-primary/10 text-primary border-primary/20">
                   {placeholderBlogs[0].category}
                 </Badge>
-                <h3 className="text-3xl font-bold text-foreground mb-4">{placeholderBlogs[0].title}</h3>
+                <h3 className="text-3xl font-bold text-foreground mb-4">
+                  {placeholderBlogs[0].title}
+                </h3>
                 <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
                   {placeholderBlogs[0].excerpt}
                 </p>
@@ -119,10 +141,15 @@ const Blogs = () => {
                     {placeholderBlogs[0].readTime}
                   </div>
                 </div>
-                <Button className="w-fit group">
-                  Read Full Post
-                  <ChevronRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link to={`/blogs/${placeholderBlogs[0].slug}`}>
+                  <Button className="w-fit group">
+                    Read Full Post
+                    <ChevronRight
+                      size={16}
+                      className="ml-2 group-hover:translate-x-1 transition-transform"
+                    />
+                  </Button>
+                </Link>
               </CardContent>
             </div>
           </Card>
@@ -130,10 +157,15 @@ const Blogs = () => {
 
         {/* Blog Grid */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-foreground mb-6">Recent Posts</h2>
+          <h2 className="text-2xl font-semibold text-foreground mb-6">
+            Recent Posts
+          </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {placeholderBlogs.slice(1).map((post, index) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-all duration-300 group">
+              <Card
+                key={index}
+                className="overflow-hidden hover:shadow-lg transition-all duration-300 group"
+              >
                 <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
                   <span className="text-muted-foreground">Blog Image</span>
                 </div>
@@ -161,9 +193,14 @@ const Blogs = () => {
                     <Calendar size={14} />
                     {new Date(post.date).toLocaleDateString()}
                   </div>
-                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                    Read More
-                  </Button>
+                  <Link to={`/blogs/${post.slug || '#'}`}>
+                    <Button
+                      variant="outline"
+                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                    >
+                      Read More
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
@@ -176,23 +213,6 @@ const Blogs = () => {
             Load More Posts
           </Button>
         </div>
-
-        {/* Newsletter Signup */}
-        <section className="mt-20 py-16 bg-muted/30 rounded-2xl text-center">
-          <h3 className="text-2xl font-bold text-foreground mb-4">Stay Updated</h3>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Subscribe to our newsletter to get the latest updates about our competitions, 
-            technical projects, and outreach activities delivered directly to your inbox.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <Button>Subscribe</Button>
-          </div>
-        </section>
       </div>
     </div>
   );

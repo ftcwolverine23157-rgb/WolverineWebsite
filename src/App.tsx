@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Team from "./pages/Team";
 import Robot from "./pages/Robot";
 import Blogs from "./pages/Blogs";
+import BlogPost from "./pages/BlogPost";
 import Outreach from "./pages/Outreach";
 import Sponsor from "./pages/Sponsor";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/team" element={<Team />} />
             <Route path="/robot" element={<Robot />} />
             <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs/:slug" element={<BlogPost />} />
             <Route path="/outreach" element={<Outreach />} />
             <Route path="/sponsor" element={<Sponsor />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

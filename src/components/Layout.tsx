@@ -9,7 +9,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main>{children}</main>
+      <main className="transition-all duration-300 ease-in-out">{children}</main>
     </div>
   );
 };

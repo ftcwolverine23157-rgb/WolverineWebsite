@@ -191,18 +191,22 @@ const Team = () => {
             </div>
             <div className="mt-8 text-center">
               <h3 className="text-xl font-semibold text-foreground mb-4">Award Highlights</h3>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="grid md:grid-cols-4 gap-4 text-sm">
                 <div className="bg-primary/10 rounded-lg p-3">
                   <div className="font-semibold text-primary">Design Award</div>
                   <div className="text-muted-foreground">Won Twice</div>
                 </div>
                 <div className="bg-accent/10 rounded-lg p-3">
-                  <div className="font-semibold text-accent">1st Place</div>
-                  <div className="text-muted-foreground">District Competition</div>
+                  <div className="font-semibold text-accent">Judges Choice</div>
+                  <div className="text-muted-foreground">Award Winner</div>
                 </div>
                 <div className="bg-primary/10 rounded-lg p-3">
-                  <div className="font-semibold text-primary">Judges Choice</div>
-                  <div className="text-muted-foreground">Award Winner</div>
+                  <div className="font-semibold text-primary">1st Alliance Captain</div>
+                  <div className="text-muted-foreground">Competition Leader</div>
+                </div>
+                <div className="bg-accent/10 rounded-lg p-3">
+                  <div className="font-semibold text-accent">Design Award</div>
+                  <div className="text-muted-foreground">Second Win</div>
                 </div>
               </div>
             </div>
