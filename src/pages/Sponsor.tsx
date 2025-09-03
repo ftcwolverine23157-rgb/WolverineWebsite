@@ -49,13 +49,12 @@ const sponsorshipTiers = [
 ];
 
 const expenses = [
-  { item: "Outreach Event Materials", amount: "$800" },
-  { item: "Community Workshop Supplies", amount: "$600" },
-  { item: "Educational Resources & Kits", amount: "$500" },
   { item: "Competition Registration", amount: "$200" },
-  { item: "Robot Parts & Materials", amount: "$1,200" },
+  { item: "Robot Parts & Materials", amount: "$1,500" },
+  { item: "Tools & Equipment", amount: "$800" },
   { item: "Team Shirts & Uniforms", amount: "$300" },
-  { item: "Travel & Accommodation", amount: "$400" }
+  { item: "Travel & Accommodation", amount: "$600" },
+  { item: "Workshop Materials", amount: "$200" }
 ];
 
 const Sponsor = () => {
@@ -67,8 +66,8 @@ const Sponsor = () => {
           <h1 className="text-5xl font-bold text-foreground mb-6">Sponsor Our Team</h1>
           <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-8" />
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Help us expand our community outreach programs. Your support enables us to reach more students, 
-            families, and community members through hands-on STEM education and robotics workshops.
+            Help us inspire the next generation of STEM leaders. Your support makes it possible 
+            for our team to compete, learn, and share our passion for robotics with the community.
           </p>
         </div>
 
@@ -81,7 +80,7 @@ const Sponsor = () => {
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-3">Community Impact</h3>
                 <p className="text-muted-foreground text-sm">
-                  We've reached 1,300+ people through outreach programs, inspiring the next generation of engineers.
+                  We've reached 500+ students through outreach programs, inspiring the next generation of engineers.
                 </p>
               </CardContent>
             </Card>
@@ -129,7 +128,7 @@ const Sponsor = () => {
                     Support FTC Team Wolverines
                   </h3>
                   <p className="text-muted-foreground">
-                    Your donation helps us expand our community outreach and inspire more students in STEM
+                    Your donation helps us compete, learn, and inspire others in STEM
                   </p>
                 </div>
                 <div className="p-1">
@@ -194,7 +193,7 @@ const Sponsor = () => {
                 <div className="mt-6 pt-6 border-t-2 border-primary/20">
                   <div className="flex justify-between items-center text-xl font-bold">
                     <span className="text-foreground">Annual Team Budget</span>
-                    <span className="text-primary">$4,000</span>
+                    <span className="text-primary">$3,600</span>
                   </div>
                 </div>
               </CardContent>
@@ -210,15 +209,11 @@ const Sponsor = () => {
             and showcase your company's commitment to the community.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild>
-              <a href="mailto:ftcwolverine23157@gmail.com">
-                Contact Our Team
-              </a>
+            <Button size="lg">
+              Contact Our Team
             </Button>
-            <Button size="lg" variant="outline" asChild>
-              <a href="/sponsorship-package.pdf" download>
-                Download Sponsorship Packet
-              </a>
+            <Button size="lg" variant="outline">
+              Download Sponsorship Packet
             </Button>
           </div>
         </section>
