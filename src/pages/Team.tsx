@@ -177,7 +177,7 @@ const Team = () => {
                 <div className="text-muted-foreground">Organizations Partnered</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-accent mb-2">1000+</div>
+                <div className="text-4xl font-bold text-accent mb-2">1300+</div>
                 <div className="text-muted-foreground">People Reached</div>
               </div>
               <div>
