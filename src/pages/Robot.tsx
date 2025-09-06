@@ -209,20 +209,20 @@ const Robot = () => {
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="text-center p-6">
                 <CardContent className="p-0">
-                  <div className="text-2xl font-bold text-primary mb-2">Regional Champion</div>
+                  <div className="text-2xl font-bold text-primary mb-2">District Champion</div>
                   <div className="text-muted-foreground">Northern Valley Regional</div>
                 </CardContent>
               </Card>
               <Card className="text-center p-6">
                 <CardContent className="p-0">
-                  <div className="text-2xl font-bold text-accent mb-2">Design Award</div>
-                  <div className="text-muted-foreground">State Championship</div>
+                  <div className="text-2xl font-bold text-accent mb-2">Design Award x2</div>
+                  <div className="text-muted-foreground">District Competition</div>
                 </CardContent>
               </Card>
               <Card className="text-center p-6">
                 <CardContent className="p-0">
-                  <div className="text-2xl font-bold text-primary mb-2">Inspire Award</div>
-                  <div className="text-muted-foreground">League Tournament</div>
+                  <div className="text-2xl font-bold text-primary mb-2">Judges Choice Award</div>
+                  <div className="text-muted-foreground">District Tournament</div>
                 </CardContent>
               </Card>
             </div>
