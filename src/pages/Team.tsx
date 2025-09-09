@@ -36,7 +36,6 @@ const teamMembers = [
     "description": "Aditi contributes to outreach by assisting with event preparation and developing creative ways to engage with the community.",
     "skills": ["Event Support", "Planning", "Communication"],
     "email": "aditi@ftcwolverines.com"
-    "photo": AditiPhoto
   },
   {
     "name": "Anand",
