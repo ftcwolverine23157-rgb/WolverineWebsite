@@ -80,7 +80,7 @@ const Sponsor = () => {
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-3">Community Impact</h3>
                 <p className="text-muted-foreground text-sm">
-                  We've reached 500+ students through outreach programs, inspiring the next generation of engineers.
+                  We've reached 1300+ students through outreach programs, inspiring the next generation of engineers.
                 </p>
               </CardContent>
             </Card>
