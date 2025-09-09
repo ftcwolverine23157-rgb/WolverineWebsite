@@ -194,7 +194,7 @@ const Sponsor = () => {
                 <div className="mt-6 pt-6 border-t-2 border-primary/20">
                   <div className="flex justify-between items-center text-xl font-bold">
                     <span className="text-foreground">Annual Team Budget</span>
-                    <span className="text-primary">$3,600</span>
+                    <span className="text-primary">$5,100</span>
                   </div>
                 </div>
               </CardContent>
