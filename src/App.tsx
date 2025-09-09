@@ -8,7 +8,7 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Team from "./pages/Team";
 import Robot from "./pages/Robot";
-import Blogs from "./pages/Blogs";
+//import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
 import Outreach from "./pages/Outreach";
 import Sponsor from "./pages/Sponsor";
@@ -46,7 +46,6 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/team" element={<Team />} />
             <Route path="/robot" element={<Robot />} />
-            <Route path="/blogs" element={<Blogs />} />
             <Route path="/blogs/:slug" element={<BlogPost />} />
             <Route path="/outreach" element={<Outreach />} />
             <Route path="/sponsor" element={<Sponsor />} />
