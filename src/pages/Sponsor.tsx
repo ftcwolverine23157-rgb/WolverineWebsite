@@ -54,7 +54,8 @@ const expenses = [
   { item: "Tools & Equipment", amount: "$800" },
   { item: "Team Shirts & Uniforms", amount: "$300" },
   { item: "Travel & Accommodation", amount: "$600" },
-  { item: "Workshop Materials", amount: "$200" }
+  { item: "Workshop Materials", amount: "$200" },
+  { item: "Outreach Expenses", amount: "$1,500" }
 ];
 
 const Sponsor = () => {
@@ -209,7 +210,7 @@ const Sponsor = () => {
             and showcase your company's commitment to the community.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => window.open('mailto:contact@ftcwolverines.com?subject=Sponsorship Inquiry', '_blank')}>
+            <Button size="lg" onClick={() => window.open('mailto:ftcwolverines23157@gmail.com?subject=Sponsorship Inquiry', '_blank')}>
               Contact Our Team
             </Button>
             <Button size="lg" variant="outline" onClick={() => window.open('/src/assets/FTC Sponsorship Package (1).pdf', '_blank')}>

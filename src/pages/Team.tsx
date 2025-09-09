@@ -1,6 +1,9 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mail, Github, Linkedin } from 'lucide-react';
+import dhruvPhoto from '@/assets/DhruvPhoto.png';
+import prayagPhoto from '@/assets/PrayagPhoto.png';
+import sanshrayPhoto from '@/assets/SanshrayPhoto.png';
 
 const teamMembers = [
 
@@ -9,14 +12,16 @@ const teamMembers = [
     "role": "Team Captain",
     "description": "Prayag leads the team and specializes in mechanical design and strategic decision-making. He ensures smooth coordination between all sub-teams.",
     "skills": ["Leadership", "Mechanical Design", "Strategy", "Team Management"],
-    "email": "prayagpoudel@gmail.com"
+    "email": "prayagpoudel@gmail.com",
+    "photo": prayagPhoto
   },
   {
     "name": "Dhruv Jindal",
     "role": "Outreach Captain",
     "description": "Dhruv heads our outreach initiatives, focusing on connecting with the community, fundraising, and event planning to expand our impact.",
     "skills": ["Leadership", "Strategy", "Fundraising", "Event Planning", "Social Media"],
-    "email": "dhrjin211@gmail.com"
+    "email": "dhrjin211@gmail.com",
+    "photo": dhruvPhoto
   },
   {
     "name": "Meera",
@@ -65,7 +70,8 @@ const teamMembers = [
     "role": "Software Lead",
     "description": "Sanshray leads the coding team, specializing in autonomous programming and system integration to optimize robot performance.",
     "skills": ["Java", "Autonomous Programming", "Control Systems", "Debugging"],
-    "email": "sanshray@ftcwolverines.com"
+    "email": "sanshray@ftcwolverines.com",
+    "photo": sanshrayPhoto
   },
   {
     "name": "Advika",
@@ -81,13 +87,7 @@ const teamMembers = [
     "skills": ["Debugging", "Programming Support", "Collaboration"],
     "email": "gautum@ftcwolverines.com"
   },
-  {
-    "name": "Vedant",
-    "role": "Coding Member",
-    "description": "Vedant is part of the coding team, assisting with development and testing to improve autonomous consistency and teleop responsiveness.",
-    "skills": ["Programming", "Debugging", "Software Testing"],
-    "email": "vedant@ftcwolverines.com"
-  }
+
 
 ];
 
@@ -111,11 +111,19 @@ const Team = () => {
             <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-background to-muted/30">
               <CardContent className="p-0">
                 <div className="flex flex-col md:flex-row gap-6">
-                  {/* Profile Photo Placeholder */}
-                  <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mx-auto md:mx-0 flex-shrink-0">
-                    <span className="text-2xl font-bold text-primary">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
+                  {/* Profile Photo */}
+                  <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mx-auto md:mx-0 flex-shrink-0 overflow-hidden">
+                    {member.photo ? (
+                      <img 
+                        src={member.photo} 
+                        alt={`${member.name} photo`}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <span className="text-2xl font-bold text-primary">
+                        {member.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    )}
                   </div>
                   
                   {/* Member Info */}
