@@ -209,7 +209,7 @@ const Robot = () => {
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">2.5s</div>
+                    <div className="text-3xl font-bold text-primary mb-2">30s</div>
                     <div className="text-muted-foreground">Autonomous Runtime</div>
                   </div>
                   <div className="text-center">
@@ -217,7 +217,7 @@ const Robot = () => {
                     <div className="text-muted-foreground">Scoring Accuracy</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">6 ft/s</div>
+                    <div className="text-3xl font-bold text-primary mb-2">2 ft/s</div>
                     <div className="text-muted-foreground">Max Speed</div>
                   </div>
                 </div>
