@@ -2,6 +2,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Cpu, Cog, Zap, Camera } from 'lucide-react';
+import mainRobotImage from '@/assets/Main Robo picture.png';
+import view1Image from '@/assets/view1.png';
+import view2Image from '@/assets/view2.png';
+import view3Image from '@/assets/view3.png';
 
 const Robot = () => {
   return (
@@ -20,15 +24,35 @@ const Robot = () => {
         {/* Robot Showcase */}
         <div className="grid lg:grid-cols-2 gap-12 mb-20">
           <div>
-            <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-muted-foreground text-xl">Robot Photo</span>
+            <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted rounded-2xl flex items-center justify-center mb-6 overflow-hidden">
+              <img 
+                src={mainRobotImage} 
+                alt="Main Robot Photo" 
+                className="w-full h-full object-cover rounded-2xl"
+              />
             </div>
             <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                  <span className="text-muted-foreground text-sm">View {i}</span>
-                </div>
-              ))}
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <img 
+                  src={view1Image} 
+                  alt="Robot View 1" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <img 
+                  src={view2Image} 
+                  alt="Robot View 2" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <img 
+                  src={view3Image} 
+                  alt="Robot View 3" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
 
