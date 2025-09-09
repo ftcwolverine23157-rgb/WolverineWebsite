@@ -217,8 +217,8 @@ const Robot = () => {
                     <div className="text-muted-foreground">Scoring Accuracy</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">2 ft/s</div>
-                    <div className="text-muted-foreground">Max Speed</div>
+                    <div className="text-3xl font-bold text-primary mb-2">5s</div>
+                    <div className="text-muted-foreground">Cycle Time</div>
                   </div>
                 </div>
               </CardContent>
