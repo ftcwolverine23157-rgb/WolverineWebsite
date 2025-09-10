@@ -95,7 +95,7 @@ const teamMembers = [
   {
     "name": "Gautam",
     "role": "Coding Member",
-    "description": "Gautum contributes to coding efforts by supporting debugging and testing, ensuring reliability during matches.",
+    "description": "Gautam contributes to coding efforts by supporting debugging and testing, ensuring reliability during matches.",
     "skills": ["Debugging", "Programming Support", "Collaboration"],
     "email": "gautum@ftcwolverines.com",
     "photo": gautamPhoto
