@@ -36,7 +36,7 @@ const teamMembers = [
     "description": "Aditi contributes to outreach by assisting with event preparation and developing creative ways to engage with the community.",
     "skills": ["Event Support", "Planning", "Communication"],
     "email": "aditi@ftcwolverines.com"
-    "photo: aditiPhoto
+    "photo": aditiPhoto
   },
   {
     "name": "Anand",
@@ -65,6 +65,7 @@ const teamMembers = [
     "description": "Rishi supports the hardware team with building, testing, and maintaining robot systems to ensure consistent performance.",
     "skills": ["Robot Building", "Testing", "Troubleshooting"],
     "email": "rishi@ftcwolverines.com"
+    "photo": rishiPhoto
   },
   {
     "name": "Sanshray Vakalagadda",
