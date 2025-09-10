@@ -10,6 +10,7 @@ import rishiPhoto from '@/assets/rishiPhoto.png';
 import anandPhoto from '@/assets/anandPhoto.png';
 import aaravPhoto from '@/assets/aaravPhoto.png';
 import meeraPhoto from '@/assets/meeraPhoto.png';
+import gautamPhoto from '@/assets/gautamPhoto.png';
 const teamMembers = [
 
   {
@@ -92,11 +93,12 @@ const teamMembers = [
     "photo": advikaPhoto
   },
   {
-    "name": "Gautum",
+    "name": "Gautam",
     "role": "Coding Member",
     "description": "Gautum contributes to coding efforts by supporting debugging and testing, ensuring reliability during matches.",
     "skills": ["Debugging", "Programming Support", "Collaboration"],
-    "email": "gautum@ftcwolverines.com"
+    "email": "gautum@ftcwolverines.com",
+    "photo": gautamPhoto
   },
 
 
