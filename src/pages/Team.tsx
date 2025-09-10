@@ -4,6 +4,9 @@ import { Mail, Github, Linkedin } from 'lucide-react';
 import dhruvPhoto from '@/assets/DhruvPhoto.png';
 import prayagPhoto from '@/assets/PrayagPhoto.png';
 import sanshrayPhoto from '@/assets/SanshrayPhoto.png';
+import aditiPhoto from '@/assets/AditiPhoto.png';
+import advikaPhoto from '@/assets/advikaPhoto.png';
+import rishiPhoto from '@/assets/rishiPhoto.png';
 
 const teamMembers = [
 
@@ -35,7 +38,7 @@ const teamMembers = [
     "role": "Outreach Member",
     "description": "Aditi contributes to outreach by assisting with event preparation and developing creative ways to engage with the community.",
     "skills": ["Event Support", "Planning", "Communication"],
-    "email": "aditi@ftcwolverines.com"
+    "email": "aditi@ftcwolverines.com",
     "photo": aditiPhoto
   },
   {
@@ -64,7 +67,7 @@ const teamMembers = [
     "role": "Hardware Member",
     "description": "Rishi supports the hardware team with building, testing, and maintaining robot systems to ensure consistent performance.",
     "skills": ["Robot Building", "Testing", "Troubleshooting"],
-    "email": "rishi@ftcwolverines.com"
+    "email": "rishi@ftcwolverines.com",
     "photo": rishiPhoto
   },
   {
@@ -80,7 +83,7 @@ const teamMembers = [
     "role": "Coding Member",
     "description": "Advika assists the coding team with writing, testing, and refining software for both autonomous and teleop modes.",
     "skills": ["Programming", "Testing", "Problem-Solving"],
-    "email": "advika@ftcwolverines.com"
+    "email": "advika@ftcwolverines.com",
     "photo": advikaPhoto
   },
   {
