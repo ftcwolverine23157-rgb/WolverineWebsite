@@ -8,6 +8,7 @@ import aditiPhoto from '@/assets/AditiPhoto.png';
 import advikaPhoto from '@/assets/advikaPhoto.png';
 import rishiPhoto from '@/assets/rishiPhoto.png';
 import anandPhoto from '@/assets/anandPhoto.png';
+import aaravPhoto from '@/assets/aaravPhoto.png';
 const teamMembers = [
 
   {
@@ -61,7 +62,8 @@ const teamMembers = [
     "role": "Hardware Member",
     "description": "Aarav contributes to the hardware team by assisting with robot construction and helping refine mechanisms for competition.",
     "skills": ["Assembly", "Mechanical Support", "Teamwork"],
-    "email": "aarav@ftcwolverines.com"
+    "email": "aarav@ftcwolverines.com",
+    "photo": aaravPhoto
   },
   {
     "name": "Rishi",
