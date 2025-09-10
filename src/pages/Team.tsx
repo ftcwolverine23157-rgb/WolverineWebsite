@@ -9,6 +9,7 @@ import advikaPhoto from '@/assets/advikaPhoto.png';
 import rishiPhoto from '@/assets/rishiPhoto.png';
 import anandPhoto from '@/assets/anandPhoto.png';
 import aaravPhoto from '@/assets/aaravPhoto.png';
+import meeraPhoto from '@/assets/meeraPhoto.png';
 const teamMembers = [
 
   {
@@ -32,7 +33,8 @@ const teamMembers = [
     "role": "Outreach Member",
     "description": "Meera supports the outreach team by helping plan and execute events, ensuring successful team representation in the community.",
     "skills": ["Planning", "Execution", "Organization"],
-    "email": "meera@ftcwolverines.com"
+    "email": "meera@ftcwolverines.com",
+    "photo": meeraPhoto
   },
   {
     "name": "Aditi",
