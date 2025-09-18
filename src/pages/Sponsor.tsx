@@ -118,6 +118,47 @@ const Sponsor = () => {
           </div>
         </section>
 
+        {/* Current Sponsors */}
+        <section className="mb-20">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">Our Current Sponsors</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-0">
+                <div className="text-2xl font-bold text-primary mb-2">Chick-fil-A</div>
+                <Badge variant="secondary" className="text-xs">Title Sponsor</Badge>
+              </CardContent>
+            </Card>
+            
+            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-0">
+                <div className="text-2xl font-bold text-primary mb-2">Balaji Mess</div>
+                <Badge variant="secondary" className="text-xs">Robot Sponsor</Badge>
+              </CardContent>
+            </Card>
+            
+            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-0">
+                <div className="text-2xl font-bold text-primary mb-2">Optometrist in Email</div>
+                <Badge variant="secondary" className="text-xs">Event Sponsor</Badge>
+              </CardContent>
+            </Card>
+            
+            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-0">
+                <div className="text-2xl font-bold text-primary mb-2">Baskin Robbins</div>
+                <Badge variant="secondary" className="text-xs">Parts Sponsor</Badge>
+              </CardContent>
+            </Card>
+            
+            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-0">
+                <div className="text-2xl font-bold text-primary mb-2">Delicious Donuts</div>
+                <Badge variant="secondary" className="text-xs">Parts Sponsor</Badge>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
         {/* Donation Form */}
         <section className="mb-20">
           <div className="max-w-4xl mx-auto">
