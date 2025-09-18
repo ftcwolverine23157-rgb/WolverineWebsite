@@ -122,23 +122,23 @@ const Sponsor = () => {
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-foreground text-center mb-12">Our Current Sponsors</h2>
           <div className="relative overflow-hidden">
-            <div className="flex animate-scroll space-x-8">
+            <div className="flex animate-scroll space-x-12">
               {/* Duplicate sponsors for seamless loop */}
               {[...Array(2)].map((_, loopIndex) => (
-                <div key={loopIndex} className="flex space-x-8 flex-shrink-0">
+                <div key={loopIndex} className="flex space-x-12 flex-shrink-0">
                   <a 
                     href="https://www.chick-fil-a.com" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 w-48 h-32 flex items-center justify-center">
+                    <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mb-2 mx-auto">
-                          <span className="text-white font-bold text-lg">CFA</span>
+                        <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <span className="text-white font-bold text-xl">CFA</span>
                         </div>
-                        <div className="text-lg font-bold text-primary mb-1">Chick-fil-A</div>
-                        <Badge variant="secondary" className="text-xs">Title Sponsor</Badge>
+                        <div className="text-xl font-bold text-primary mb-2">Chick-fil-A</div>
+                        <Badge variant="secondary" className="text-sm">Title Sponsor</Badge>
                       </CardContent>
                     </Card>
                   </a>
@@ -149,30 +149,30 @@ const Sponsor = () => {
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 w-48 h-32 flex items-center justify-center">
+                    <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mb-2 mx-auto">
-                          <span className="text-white font-bold text-lg">BM</span>
+                        <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <span className="text-white font-bold text-xl">BM</span>
                         </div>
-                        <div className="text-lg font-bold text-primary mb-1">Balaji Mess</div>
-                        <Badge variant="secondary" className="text-xs">Robot Sponsor</Badge>
+                        <div className="text-xl font-bold text-primary mb-2">Balaji Mess</div>
+                        <Badge variant="secondary" className="text-sm">Robot Sponsor</Badge>
                       </CardContent>
                     </Card>
                   </a>
                   
                   <a 
-                    href="mailto:info@corvisionoptometry.com" 
+                    href="https://www.corvision.com/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 w-48 h-32 flex items-center justify-center">
+                    <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-2 mx-auto">
-                          <span className="text-white font-bold text-lg">CV</span>
+                        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <span className="text-white font-bold text-xl">CV</span>
                         </div>
-                        <div className="text-lg font-bold text-primary mb-1">Corvision Optometry</div>
-                        <Badge variant="secondary" className="text-xs">Event Sponsor</Badge>
+                        <div className="text-xl font-bold text-primary mb-2">Corvision Optometry</div>
+                        <Badge variant="secondary" className="text-sm">Event Sponsor</Badge>
                       </CardContent>
                     </Card>
                   </a>
@@ -183,30 +183,30 @@ const Sponsor = () => {
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 w-48 h-32 flex items-center justify-center">
+                    <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center mb-2 mx-auto">
-                          <span className="text-white font-bold text-lg">BR</span>
+                        <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <span className="text-white font-bold text-xl">BR</span>
                         </div>
-                        <div className="text-lg font-bold text-primary mb-1">Baskin Robbins</div>
-                        <Badge variant="secondary" className="text-xs">Parts Sponsor</Badge>
+                        <div className="text-xl font-bold text-primary mb-2">Baskin Robbins</div>
+                        <Badge variant="secondary" className="text-sm">Parts Sponsor</Badge>
                       </CardContent>
                     </Card>
                   </a>
                   
                   <a 
-                    href="https://www.deliciousdonuts.com" 
+                    href="https://www.yelp.com/biz/delicious-donuts-and-bagels-newark" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 w-48 h-32 flex items-center justify-center">
+                    <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mb-2 mx-auto">
-                          <span className="text-white font-bold text-lg">DD</span>
+                        <div className="w-20 h-20 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <span className="text-white font-bold text-xl">DD</span>
                         </div>
-                        <div className="text-lg font-bold text-primary mb-1">Delicious Donuts</div>
-                        <Badge variant="secondary" className="text-xs">Parts Sponsor</Badge>
+                        <div className="text-xl font-bold text-primary mb-2">Delicious Donuts</div>
+                        <Badge variant="secondary" className="text-sm">Parts Sponsor</Badge>
                       </CardContent>
                     </Card>
                   </a>
