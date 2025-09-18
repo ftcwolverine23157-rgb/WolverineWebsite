@@ -4,7 +4,13 @@ import { Mail, Github, Linkedin } from 'lucide-react';
 import dhruvPhoto from '@/assets/DhruvPhoto.png';
 import prayagPhoto from '@/assets/PrayagPhoto.png';
 import sanshrayPhoto from '@/assets/SanshrayPhoto.png';
-
+import aditiPhoto from '@/assets/AditiPhoto.png';
+import advikaPhoto from '@/assets/advikaPhoto.png';
+import rishiPhoto from '@/assets/rishiPhoto.png';
+import anandPhoto from '@/assets/anandPhoto.png';
+import aaravPhoto from '@/assets/aaravPhoto.png';
+import meeraPhoto from '@/assets/meeraPhoto.png';
+import gautamPhoto from '@/assets/gautamPhoto.png';
 const teamMembers = [
 
   {
@@ -28,21 +34,24 @@ const teamMembers = [
     "role": "Outreach Member",
     "description": "Meera supports the outreach team by helping plan and execute events, ensuring successful team representation in the community.",
     "skills": ["Planning", "Execution", "Organization"],
-    "email": "meera@ftcwolverines.com"
+    "email": "meera@ftcwolverines.com",
+    "photo": meeraPhoto
   },
   {
     "name": "Aditi",
     "role": "Outreach Member",
     "description": "Aditi contributes to outreach by assisting with event preparation and developing creative ways to engage with the community.",
     "skills": ["Event Support", "Planning", "Communication"],
-    "email": "aditi@ftcwolverines.com"
+    "email": "aditi@ftcwolverines.com",
+    "photo": aditiPhoto
   },
   {
     "name": "Anand",
     "role": "Outreach Member",
     "description": "Anand helps organize outreach activities, supporting both logistics and hands-on execution to ensure smooth operations.",
     "skills": ["Teamwork", "Logistics", "Event Execution"],
-    "email": "anand@ftcwolverines.com"
+    "email": "anand@ftcwolverines.com",
+    "photo": anandPhoto
   },
   {
     "name": "Varun",
@@ -56,14 +65,16 @@ const teamMembers = [
     "role": "Hardware Member",
     "description": "Aarav contributes to the hardware team by assisting with robot construction and helping refine mechanisms for competition.",
     "skills": ["Assembly", "Mechanical Support", "Teamwork"],
-    "email": "aarav@ftcwolverines.com"
+    "email": "aarav@ftcwolverines.com",
+    "photo": aaravPhoto
   },
   {
     "name": "Rishi",
     "role": "Hardware Member",
     "description": "Rishi supports the hardware team with building, testing, and maintaining robot systems to ensure consistent performance.",
     "skills": ["Robot Building", "Testing", "Troubleshooting"],
-    "email": "rishi@ftcwolverines.com"
+    "email": "rishi@ftcwolverines.com",
+    "photo": rishiPhoto
   },
   {
     "name": "Sanshray Vakalagadda",
@@ -78,14 +89,16 @@ const teamMembers = [
     "role": "Coding Member",
     "description": "Advika assists the coding team with writing, testing, and refining software for both autonomous and teleop modes.",
     "skills": ["Programming", "Testing", "Problem-Solving"],
-    "email": "advika@ftcwolverines.com"
+    "email": "advika@ftcwolverines.com",
+    "photo": advikaPhoto
   },
   {
-    "name": "Gautum",
+    "name": "Gautam",
     "role": "Coding Member",
-    "description": "Gautum contributes to coding efforts by supporting debugging and testing, ensuring reliability during matches.",
+    "description": "Gautam contributes to coding efforts by supporting debugging and testing, ensuring reliability during matches.",
     "skills": ["Debugging", "Programming Support", "Collaboration"],
-    "email": "gautum@ftcwolverines.com"
+    "email": "gautum@ftcwolverines.com",
+    "photo": gautamPhoto
   },
 
 
