@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, Users, Trophy, Wrench } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 
 const sponsorshipTiers = [
   {
@@ -59,6 +60,34 @@ const expenses = [
 ];
 
 const Sponsor = () => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return;
+    
+    const rect = scrollRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const scrollPercent = x / width;
+    
+    // Calculate scroll position based on mouse position
+    const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
+    const newScrollPosition = scrollPercent * maxScroll;
+    
+    setScrollPosition(newScrollPosition);
+    scrollRef.current.scrollLeft = newScrollPosition;
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    // Resume auto-scroll by resetting scroll position
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = 0;
+    }
+  };
+
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-6xl mx-auto px-4">
@@ -121,8 +150,14 @@ const Sponsor = () => {
         {/* Current Sponsors */}
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-foreground text-center mb-12">Our Current Sponsors</h2>
-          <div className="relative overflow-hidden">
-            <div className="flex animate-scroll space-x-12">
+          <div 
+            className="relative overflow-hidden cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={handleMouseLeave}
+            onMouseMove={handleMouseMove}
+            ref={scrollRef}
+          >
+            <div className={`flex space-x-12 ${isHovered ? 'animate-scroll-slow' : 'animate-scroll'}`}>
               {/* Duplicate sponsors for seamless loop */}
               {[...Array(2)].map((_, loopIndex) => (
                 <div key={loopIndex} className="flex space-x-12 flex-shrink-0">
