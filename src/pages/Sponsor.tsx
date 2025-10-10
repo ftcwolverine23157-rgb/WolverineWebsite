@@ -88,6 +88,36 @@ const Sponsor = () => {
     }
   };
 
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!scrollRef.current) return;
+    
+    const scrollAmount = e.deltaY > 0 ? 150 : -150;
+    scrollRef.current.scrollLeft += scrollAmount;
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return;
+    const touch = e.touches[0];
+    const startX = touch.clientX;
+    const startScrollLeft = scrollRef.current.scrollLeft;
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const deltaX = startX - touch.clientX;
+      scrollRef.current!.scrollLeft = startScrollLeft + deltaX;
+    };
+    
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+    
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  };
+
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-6xl mx-auto px-4">
@@ -151,10 +181,12 @@ const Sponsor = () => {
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-foreground text-center mb-12">Our Current Sponsors</h2>
           <div 
-            className="relative overflow-hidden cursor-grab active:cursor-grabbing"
+            className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
+            onWheel={handleWheel}
+            onTouchStart={handleTouchStart}
             ref={scrollRef}
           >
             <div className={`flex space-x-12 ${isHovered ? 'animate-scroll-slow' : 'animate-scroll'}`}>
