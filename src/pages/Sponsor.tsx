@@ -92,7 +92,7 @@ const Sponsor = () => {
     e.preventDefault();
     if (!scrollRef.current) return;
     
-    const scrollAmount = e.deltaY > 0 ? 150 : -150;
+    const scrollAmount = e.deltaY > 0 ? -150 : 150;
     scrollRef.current.scrollLeft += scrollAmount;
   };
 
