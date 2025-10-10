@@ -61,32 +61,53 @@ const expenses = [
 
 const Sponsor = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [startX, setStartX] = useState(0);
+  const [startScrollLeft, setStartScrollLeft] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.clientX);
+    setStartScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
     
-    const rect = scrollRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const width = rect.width;
-    const scrollPercent = x / width;
-    
-    // Calculate scroll position based on mouse position
-    const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
-    const newScrollPosition = scrollPercent * maxScroll;
-    
-    setScrollPosition(newScrollPosition);
-    scrollRef.current.scrollLeft = newScrollPosition;
+    const deltaX = e.clientX - startX;
+    scrollRef.current.scrollLeft = startScrollLeft - deltaX;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    setIsDragging(false);
     // Resume auto-scroll by resetting scroll position
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = 0;
     }
   };
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging]);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -181,10 +202,12 @@ const Sponsor = () => {
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-foreground text-center mb-12">Our Current Sponsors</h2>
           <div 
-            className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
+            className={`relative overflow-hidden select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleMouseLeave}
+            onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
             onWheel={handleWheel}
             onTouchStart={handleTouchStart}
             ref={scrollRef}
