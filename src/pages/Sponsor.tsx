@@ -68,6 +68,7 @@ const Sponsor = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     if (!scrollRef.current) return;
     setIsDragging(true);
     setStartX(e.clientX);
@@ -82,32 +83,52 @@ const Sponsor = () => {
     scrollRef.current.scrollLeft = startScrollLeft - deltaX;
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     setIsDragging(false);
   };
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setIsDragging(false);
-    // Resume auto-scroll by resetting scroll position
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = 0;
-    }
-  };
-
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only stop dragging if we're actually dragging
+    if (isDragging) {
       setIsDragging(false);
+    }
+    setIsHovered(false);
+  };
+
+  // Global mouse up handler for when mouse is released outside the element
+  useEffect(() => {
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      if (isDragging) {
+        setIsDragging(false);
+      }
+    };
+
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !scrollRef.current) return;
+      e.preventDefault();
+      
+      const deltaX = e.clientX - startX;
+      scrollRef.current.scrollLeft = startScrollLeft - deltaX;
     };
 
     if (isDragging) {
       document.addEventListener('mouseup', handleGlobalMouseUp);
+      document.addEventListener('mousemove', handleGlobalMouseMove);
     }
 
     return () => {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
     };
-  }, [isDragging]);
+  }, [isDragging, startX, startScrollLeft]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      setIsDragging(false);
+    };
+  }, []);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -206,7 +227,6 @@ const Sponsor = () => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleMouseLeave}
             onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onWheel={handleWheel}
             onTouchStart={handleTouchStart}
