@@ -217,27 +217,129 @@ const challenges = {
   }
 };
 
+// Simple Robot Simulation Component
+const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks: CodeBlock[] }) => {
+  const [robotX, setRobotX] = useState(0);
+  const [robotY, setRobotY] = useState(0);
+  const [robotDir, setRobotDir] = useState('right');
+  const [isRunning, setIsRunning] = useState(false);
+
+  // Simple grid for all levels
+  const grid = [
+    ['🤖', '⬜', '⬜', '🎯'],
+    ['⬜', '⬜', '⬜', '⬜'],
+    ['⬜', '⬜', '⬜', '⬜'],
+    ['⬜', '⬜', '⬜', '⬜']
+  ];
+
+  const resetRobot = () => {
+    setRobotX(0);
+    setRobotY(0);
+    setRobotDir('right');
+    setIsRunning(false);
+  };
+
+  const runSimulation = async () => {
+    if (isRunning || codeBlocks.length === 0) return;
+    
+    setIsRunning(true);
+    resetRobot();
+    
+    for (let i = 0; i < codeBlocks.length; i++) {
+      const block = codeBlocks[i];
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (block.id === 'move-forward') {
+        if (robotDir === 'right') setRobotX(prev => Math.min(3, prev + 1));
+        else if (robotDir === 'left') setRobotX(prev => Math.max(0, prev - 1));
+        else if (robotDir === 'up') setRobotY(prev => Math.max(0, prev - 1));
+        else if (robotDir === 'down') setRobotY(prev => Math.min(3, prev + 1));
+      } else if (block.id === 'move-backward') {
+        if (robotDir === 'right') setRobotX(prev => Math.max(0, prev - 1));
+        else if (robotDir === 'left') setRobotX(prev => Math.min(3, prev + 1));
+        else if (robotDir === 'up') setRobotY(prev => Math.min(3, prev + 1));
+        else if (robotDir === 'down') setRobotY(prev => Math.max(0, prev - 1));
+      } else if (block.id === 'turn-right') {
+        const dirs = ['right', 'down', 'left', 'up'];
+        const current = dirs.indexOf(robotDir);
+        setRobotDir(dirs[(current + 1) % 4]);
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } else if (block.id === 'turn-left') {
+        const dirs = ['right', 'down', 'left', 'up'];
+        const current = dirs.indexOf(robotDir);
+        setRobotDir(dirs[(current - 1 + 4) % 4]);
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+    
+    setIsRunning(false);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="text-center">
+        <h3 className="text-white font-bold mb-2">Robot Simulation</h3>
+        <p className="text-blue-200 text-sm mb-4">
+          Robot Position: ({robotX}, {robotY}) | Direction: {robotDir}
+        </p>
+      </div>
+      
+      <div className="bg-gray-900 rounded-lg p-4">
+        <div className="grid grid-cols-4 gap-1 max-w-xs mx-auto">
+          {grid.map((row, rowIndex) => 
+            row.map((cell, colIndex) => {
+              const isRobot = rowIndex === robotY && colIndex === robotX;
+              return (
+                <div 
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`w-12 h-12 flex items-center justify-center text-2xl border border-gray-600 rounded ${
+                    isRobot ? 'bg-blue-500 animate-pulse' : 'bg-gray-800'
+                  }`}
+                >
+                  {isRobot ? '🤖' : cell}
+                  {isRobot && (
+                    <div className="absolute -top-1 -right-1 text-xs">
+                      {robotDir === 'right' && '→'}
+                      {robotDir === 'left' && '←'}
+                      {robotDir === 'up' && '↑'}
+                      {robotDir === 'down' && '↓'}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+      
+      <div className="text-center space-x-2">
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="text-white border-2 border-white hover:bg-white hover:text-gray-800 bg-transparent"
+          onClick={resetRobot}
+        >
+          Reset
+        </Button>
+        <Button 
+          size="sm" 
+          className="bg-green-500 hover:bg-green-600 text-white border-2 border-green-400"
+          onClick={runSimulation}
+          disabled={isRunning || codeBlocks.length === 0}
+        >
+          {isRunning ? 'Running...' : 'Run Code'}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 // Drag and Drop Coding Interface Component
 const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeChange: (code: CodeBlock[]) => void }) => {
   const [draggedBlock, setDraggedBlock] = useState<CodeBlock | null>(null);
   const [codeSequence, setCodeSequence] = useState<CodeBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
-  const [robotDirection, setRobotDirection] = useState('right');
-  const [isRunning, setIsRunning] = useState(false);
-  const [simulationPath, setSimulationPath] = useState<Array<{x: number, y: number, direction: string}>>([]);
   const dropZoneRef = useRef<HTMLDivElement>(null);
-  
-  const challenge = challenges[levelId as keyof typeof challenges] || challenges[1];
-
-  // Initialize robot position when component mounts
-  useEffect(() => {
-    const startPos = challenge.startPos || { x: 0, y: 0 };
-    const direction = challenge.robotDirection || 'right';
-    setRobotPosition(startPos);
-    setRobotDirection(direction);
-    setSimulationPath([{ ...startPos, direction }]);
-  }, [levelId, challenge.startPos, challenge.robotDirection]);
 
   const handleDragStart = (e: React.DragEvent, block: CodeBlock) => {
     setDraggedBlock(block);
@@ -275,101 +377,6 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
   const clearCode = () => {
     setCodeSequence([]);
     onCodeChange([]);
-    setRobotPosition(challenge.startPos);
-    setRobotDirection(challenge.robotDirection);
-    setSimulationPath([{ ...challenge.startPos, direction: challenge.robotDirection }]);
-  };
-
-  const runCode = async () => {
-    if (isRunning) return;
-    
-    setIsRunning(true);
-    setRobotPosition(challenge.startPos);
-    setRobotDirection(challenge.robotDirection);
-    setSimulationPath([{ ...challenge.startPos, direction: challenge.robotDirection }]);
-    
-    let currentPos = { ...challenge.startPos };
-    let currentDir = challenge.robotDirection;
-    const path = [{ ...currentPos, direction: currentDir }];
-    
-    // Simulate robot movement step by step
-    for (let i = 0; i < codeSequence.length; i++) {
-      const block = codeSequence[i];
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Delay for animation
-      
-      if (block.type === 'move' && block.id === 'move-forward') {
-        // Move forward based on current direction
-        if (currentDir === 'right') {
-          currentPos = { x: Math.min(3, currentPos.x + 1), y: currentPos.y };
-        } else if (currentDir === 'left') {
-          currentPos = { x: Math.max(0, currentPos.x - 1), y: currentPos.y };
-        } else if (currentDir === 'up') {
-          currentPos = { x: currentPos.x, y: Math.max(0, currentPos.y - 1) };
-        } else if (currentDir === 'down') {
-          currentPos = { x: currentPos.x, y: Math.min(3, currentPos.y + 1) };
-        }
-        path.push({ ...currentPos, direction: currentDir });
-        setRobotPosition(currentPos);
-        setSimulationPath([...path]);
-      } else if (block.type === 'move' && block.id === 'move-backward') {
-        // Move backward based on current direction
-        if (currentDir === 'right') {
-          currentPos = { x: Math.max(0, currentPos.x - 1), y: currentPos.y };
-        } else if (currentDir === 'left') {
-          currentPos = { x: Math.min(3, currentPos.x + 1), y: currentPos.y };
-        } else if (currentDir === 'up') {
-          currentPos = { x: currentPos.x, y: Math.min(3, currentPos.y + 1) };
-        } else if (currentDir === 'down') {
-          currentPos = { x: currentPos.x, y: Math.max(0, currentPos.y - 1) };
-        }
-        path.push({ ...currentPos, direction: currentDir });
-        setRobotPosition(currentPos);
-        setSimulationPath([...path]);
-      } else if (block.type === 'turn' && block.id === 'turn-right') {
-        // Turn right (clockwise)
-        const directions = ['right', 'down', 'left', 'up'];
-        const currentIndex = directions.indexOf(currentDir);
-        currentDir = directions[(currentIndex + 1) % 4];
-        setRobotDirection(currentDir);
-        await new Promise(resolve => setTimeout(resolve, 500)); // Turn animation
-      } else if (block.type === 'turn' && block.id === 'turn-left') {
-        // Turn left (counter-clockwise)
-        const directions = ['right', 'down', 'left', 'up'];
-        const currentIndex = directions.indexOf(currentDir);
-        currentDir = directions[(currentIndex - 1 + 4) % 4];
-        setRobotDirection(currentDir);
-        await new Promise(resolve => setTimeout(resolve, 500)); // Turn animation
-      } else if (block.type === 'repeat') {
-        // Handle repeat blocks (simplified for now)
-        const repeatCount = block.id === 'repeat-3' ? 3 : 5;
-        for (let r = 0; r < repeatCount; r++) {
-          // Repeat the next few blocks
-          for (let j = i + 1; j < Math.min(i + 3, codeSequence.length); j++) {
-            const repeatBlock = codeSequence[j];
-            if (repeatBlock.type === 'move' && repeatBlock.id === 'move-forward') {
-              if (currentDir === 'right') {
-                currentPos = { x: Math.min(3, currentPos.x + 1), y: currentPos.y };
-              } else if (currentDir === 'left') {
-                currentPos = { x: Math.max(0, currentPos.x - 1), y: currentPos.y };
-              } else if (currentDir === 'up') {
-                currentPos = { x: currentPos.x, y: Math.max(0, currentPos.y - 1) };
-              } else if (currentDir === 'down') {
-                currentPos = { x: currentPos.x, y: Math.min(3, currentPos.y + 1) };
-              }
-              path.push({ ...currentPos, direction: currentDir });
-              setRobotPosition(currentPos);
-              setSimulationPath([...path]);
-              await new Promise(resolve => setTimeout(resolve, 800));
-            }
-          }
-        }
-        i += 2; // Skip the repeated blocks
-      }
-    }
-    
-    setIsRunning(false);
-    console.log('Code execution completed!', codeSequence);
-    console.log('Final position:', currentPos, 'Direction:', currentDir);
   };
 
   return (
@@ -444,87 +451,8 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
         </div>
       </div>
 
-      {/* Challenge Area */}
-      <div className="bg-gray-800 rounded-lg p-4">
-        <div className="mb-4">
-          <h4 className="text-white font-bold text-lg mb-2">{challenge.title}</h4>
-          <p className="text-blue-200 text-sm">{challenge.description}</p>
-        </div>
-        
-        {/* Debug Info */}
-        <div className="text-center text-xs text-gray-400 mb-2">
-          Robot Position: ({robotPosition.x}, {robotPosition.y}) | Direction: {robotDirection} | Level: {levelId}
-        </div>
-
-        {/* Challenge Grid */}
-        <div className="bg-gray-900 rounded-lg p-4">
-          <div className="grid grid-cols-4 gap-1 max-w-xs mx-auto">
-            {challenge.grid.map((row, rowIndex) => 
-              row.map((cell, colIndex) => {
-                const isRobotHere = rowIndex === robotPosition.y && colIndex === robotPosition.x;
-                const isPath = simulationPath.some(step => step.x === colIndex && step.y === rowIndex);
-                const isStart = colIndex === challenge.startPos.x && rowIndex === challenge.startPos.y;
-                
-                let robotIcon = '🤖';
-                if (isRobotHere) {
-                  switch (robotDirection) {
-                    case 'right': robotIcon = '🤖'; break;
-                    case 'left': robotIcon = '🤖'; break;
-                    case 'up': robotIcon = '🤖'; break;
-                    case 'down': robotIcon = '🤖'; break;
-                  }
-                }
-                
-                return (
-                  <div 
-                    key={`${rowIndex}-${colIndex}`}
-                    className={`w-12 h-12 flex items-center justify-center text-2xl border border-gray-600 rounded relative ${
-                      isRobotHere 
-                        ? 'bg-blue-500 animate-pulse' 
-                        : isPath && !isStart
-                        ? 'bg-blue-300/30'
-                        : 'bg-gray-800'
-                    }`}
-                  >
-                    {isRobotHere ? robotIcon : cell}
-                    {isRobotHere && (
-                      <div className="absolute -top-1 -right-1 text-xs">
-                        {robotDirection === 'right' && '→'}
-                        {robotDirection === 'left' && '←'}
-                        {robotDirection === 'up' && '↑'}
-                        {robotDirection === 'down' && '↓'}
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-        
-        {/* Control Buttons */}
-        <div className="mt-4 text-center space-x-2">
-          <Button 
-            size="sm" 
-            variant="outline"
-            className="text-white border-2 border-white hover:bg-white hover:text-gray-800 bg-transparent"
-            onClick={() => {
-              setRobotPosition(challenge.startPos || { x: 0, y: 0 });
-              setRobotDirection(challenge.robotDirection || 'right');
-            }}
-          >
-            Reset Robot
-          </Button>
-          <Button 
-            size="sm" 
-            className={`${isRunning ? 'bg-yellow-500' : 'bg-green-500'} hover:bg-green-600 text-white border-2 border-green-400`}
-            onClick={runCode}
-            disabled={isRunning || codeSequence.length === 0}
-          >
-            {isRunning ? 'Running...' : 'Run Code'}
-          </Button>
-        </div>
-      </div>
+      {/* Robot Simulation */}
+      <RobotSimulation levelId={levelId} codeBlocks={codeSequence} />
     </div>
   );
 };
