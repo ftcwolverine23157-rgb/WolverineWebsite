@@ -56,7 +56,7 @@ interface CodeBlock {
   label: string;
   color: string;
   icon: string;
-  params?: any;
+  params?: Record<string, unknown>;
 }
 
 const codeBlocks: CodeBlock[] = [
