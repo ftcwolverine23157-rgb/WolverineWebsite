@@ -160,6 +160,13 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
   
   const challenge = challenges[levelId as keyof typeof challenges] || challenges[1];
 
+  // Initialize robot position when component mounts
+  useEffect(() => {
+    setRobotPosition(challenge.startPos);
+    setRobotDirection(challenge.robotDirection);
+    setSimulationPath([{ ...challenge.startPos, direction: challenge.robotDirection }]);
+  }, [levelId, challenge.startPos, challenge.robotDirection]);
+
   const handleDragStart = (e: React.DragEvent, block: CodeBlock) => {
     setDraggedBlock(block);
     setIsDragging(true);
@@ -196,6 +203,9 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
   const clearCode = () => {
     setCodeSequence([]);
     onCodeChange([]);
+    setRobotPosition(challenge.startPos);
+    setRobotDirection(challenge.robotDirection);
+    setSimulationPath([{ ...challenge.startPos, direction: challenge.robotDirection }]);
   };
 
   const runCode = async () => {
@@ -369,11 +379,16 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
           <p className="text-blue-200 text-sm">{challenge.description}</p>
         </div>
         
+        {/* Debug Info */}
+        <div className="text-center text-xs text-gray-400 mb-2">
+          Robot Position: ({robotPosition.x}, {robotPosition.y}) | Direction: {robotDirection}
+        </div>
+
         {/* Challenge Grid */}
         <div className="bg-gray-900 rounded-lg p-4">
           <div className="grid grid-cols-4 gap-1 max-w-xs mx-auto">
             {challenge.grid.map((row, rowIndex) => 
-              row.map((colIndex) => {
+              row.map((cell, colIndex) => {
                 const isRobotHere = rowIndex === robotPosition.y && colIndex === robotPosition.x;
                 const isPath = simulationPath.some(step => step.x === colIndex && step.y === rowIndex);
                 const isStart = colIndex === challenge.startPos.x && rowIndex === challenge.startPos.y;
@@ -399,7 +414,7 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
                         : 'bg-gray-800'
                     }`}
                   >
-                    {isRobotHere ? robotIcon : challenge.grid[rowIndex][colIndex]}
+                    {isRobotHere ? robotIcon : cell}
                     {isRobotHere && (
                       <div className="absolute -top-1 -right-1 text-xs">
                         {robotDirection === 'right' && '→'}
