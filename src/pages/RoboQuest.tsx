@@ -14,7 +14,7 @@ import {
   Share2, 
   Settings,
   Award,
-  Robot,
+  Bot,
   Zap,
   Eye,
   Repeat,
@@ -250,7 +250,7 @@ const RoboQuest = () => {
       <div className="text-center space-y-8 max-w-4xl mx-auto px-4">
         <div className="space-y-4">
           <div className="flex items-center justify-center space-x-4 mb-8">
-            <Robot className="h-16 w-16 text-yellow-400" />
+            <Bot className="h-16 w-16 text-yellow-400" />
             <h1 className="text-6xl font-bold text-white">RoboQuest</h1>
           </div>
           <p className="text-xl text-blue-200 max-w-2xl mx-auto">
