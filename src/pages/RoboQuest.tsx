@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +48,174 @@ interface GameState {
     accessories: string[];
   };
 }
+
+// Drag and drop coding blocks
+interface CodeBlock {
+  id: string;
+  type: 'move' | 'turn' | 'repeat' | 'if' | 'wait' | 'sound' | 'light';
+  label: string;
+  color: string;
+  icon: string;
+  params?: any;
+}
+
+const codeBlocks: CodeBlock[] = [
+  { id: 'move-forward', type: 'move', label: 'Move Forward', color: 'bg-blue-500', icon: '↑' },
+  { id: 'move-backward', type: 'move', label: 'Move Backward', color: 'bg-blue-500', icon: '↓' },
+  { id: 'turn-left', type: 'turn', label: 'Turn Left', color: 'bg-green-500', icon: '↶' },
+  { id: 'turn-right', type: 'turn', label: 'Turn Right', color: 'bg-green-500', icon: '↷' },
+  { id: 'repeat-3', type: 'repeat', label: 'Repeat 3 Times', color: 'bg-purple-500', icon: '🔄' },
+  { id: 'repeat-5', type: 'repeat', label: 'Repeat 5 Times', color: 'bg-purple-500', icon: '🔄' },
+  { id: 'wait-1', type: 'wait', label: 'Wait 1 Second', color: 'bg-yellow-500', icon: '⏱️' },
+  { id: 'wait-2', type: 'wait', label: 'Wait 2 Seconds', color: 'bg-yellow-500', icon: '⏱️' },
+  { id: 'play-sound', type: 'sound', label: 'Play Sound', color: 'bg-pink-500', icon: '🔊' },
+  { id: 'turn-light-on', type: 'light', label: 'Turn Light On', color: 'bg-orange-500', icon: '💡' },
+  { id: 'turn-light-off', type: 'light', label: 'Turn Light Off', color: 'bg-orange-500', icon: '💡' },
+];
+
+// Drag and Drop Coding Interface Component
+const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeChange: (code: CodeBlock[]) => void }) => {
+  const [draggedBlock, setDraggedBlock] = useState<CodeBlock | null>(null);
+  const [codeSequence, setCodeSequence] = useState<CodeBlock[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  const handleDragStart = (e: React.DragEvent, block: CodeBlock) => {
+    setDraggedBlock(block);
+    setIsDragging(true);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = () => {
+    setDraggedBlock(null);
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (draggedBlock) {
+      const newCodeSequence = [...codeSequence, { ...draggedBlock, id: `${draggedBlock.id}-${Date.now()}` }];
+      setCodeSequence(newCodeSequence);
+      onCodeChange(newCodeSequence);
+    }
+    setDraggedBlock(null);
+    setIsDragging(false);
+  };
+
+  const removeBlock = (index: number) => {
+    const newCodeSequence = codeSequence.filter((_, i) => i !== index);
+    setCodeSequence(newCodeSequence);
+    onCodeChange(newCodeSequence);
+  };
+
+  const clearCode = () => {
+    setCodeSequence([]);
+    onCodeChange([]);
+  };
+
+  const runCode = () => {
+    // Simple animation simulation
+    console.log('Running code:', codeSequence);
+    // In a real implementation, this would control the virtual robot
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Code Blocks Palette */}
+      <div className="bg-gray-800 rounded-lg p-4">
+        <h4 className="text-white font-bold mb-4 text-lg">Code Blocks</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {codeBlocks.map((block) => (
+            <div
+              key={block.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, block)}
+              onDragEnd={handleDragEnd}
+              className={`${block.color} text-white p-3 rounded-lg cursor-grab active:cursor-grabbing text-center font-bold text-sm hover:opacity-80 transition-opacity`}
+            >
+              <div className="text-2xl mb-1">{block.icon}</div>
+              <div className="text-xs">{block.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Code Sequence Area */}
+      <div className="bg-gray-800 rounded-lg p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="text-white font-bold text-lg">Your Code</h4>
+          <div className="space-x-2">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-white border-white hover:bg-white hover:text-gray-800"
+              onClick={clearCode}
+            >
+              Clear
+            </Button>
+            <Button 
+              size="sm" 
+              className="bg-green-500 hover:bg-green-600 text-white"
+              onClick={runCode}
+            >
+              Run Code
+            </Button>
+          </div>
+        </div>
+        
+        <div
+          ref={dropZoneRef}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`min-h-32 border-2 border-dashed rounded-lg p-4 ${
+            isDragging ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600'
+          }`}
+        >
+          {codeSequence.length === 0 ? (
+            <div className="text-gray-400 text-center py-8">
+              <Code className="h-12 w-12 mx-auto mb-2" />
+              <p>Drag code blocks here to build your program!</p>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {codeSequence.map((block, index) => (
+                <div
+                  key={`${block.id}-${index}`}
+                  className={`${block.color} text-white p-3 rounded-lg flex items-center space-x-2 font-bold text-sm`}
+                >
+                  <span className="text-lg">{block.icon}</span>
+                  <span>{block.label}</span>
+                  <button
+                    onClick={() => removeBlock(index)}
+                    className="text-red-300 hover:text-red-100 ml-2"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Virtual Robot Preview */}
+      <div className="bg-gray-800 rounded-lg p-4">
+        <h4 className="text-white font-bold mb-4 text-lg">Robot Preview</h4>
+        <div className="bg-gray-900 rounded-lg p-6 min-h-32 flex items-center justify-center">
+          <div className="text-center text-gray-400">
+            <Bot className="h-16 w-16 mx-auto mb-2 text-blue-400" />
+            <p className="text-sm">Your robot will move here when you run the code!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const initialLevels: Level[] = [
   {
@@ -262,7 +430,7 @@ const RoboQuest = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
           <Button 
             size="lg" 
-            className="h-20 text-lg bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+            className="h-20 text-lg bg-yellow-500 hover:bg-yellow-600 text-black font-bold border-2 border-yellow-400"
             onClick={() => setCurrentView('hub')}
           >
             <Play className="mr-2 h-6 w-6" />
@@ -272,7 +440,7 @@ const RoboQuest = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="h-20 text-lg border-white text-white hover:bg-white hover:text-blue-900"
+            className="h-20 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-900 bg-transparent"
             onClick={() => {/* Progress tracker */}}
           >
             <Trophy className="mr-2 h-6 w-6" />
@@ -282,7 +450,7 @@ const RoboQuest = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="h-20 text-lg border-white text-white hover:bg-white hover:text-blue-900"
+            className="h-20 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-900 bg-transparent"
             onClick={() => {/* Achievements */}}
           >
             <Award className="mr-2 h-6 w-6" />
@@ -292,7 +460,7 @@ const RoboQuest = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="h-20 text-lg border-white text-white hover:bg-white hover:text-blue-900"
+            className="h-20 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-900 bg-transparent"
             onClick={() => {/* Settings */}}
           >
             <Settings className="mr-2 h-6 w-6" />
@@ -430,13 +598,11 @@ const RoboQuest = () => {
               <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-bold text-white mb-4">Practice Mode</h3>
-                  <div className="bg-gray-900 rounded-lg p-6 min-h-64">
-                    <div className="text-center text-gray-400">
-                      <Code className="h-12 w-12 mx-auto mb-4" />
-                      <p>Drag and drop programming interface coming soon!</p>
-                      <p className="text-sm mt-2">Practice your coding skills in this sandbox environment.</p>
-                    </div>
-                  </div>
+                  <p className="text-blue-200 mb-6">Drag and drop code blocks to build your robot program!</p>
+                  <CodingInterface 
+                    levelId={selectedLevel.id} 
+                    onCodeChange={(code) => console.log('Code changed:', code)} 
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -445,20 +611,21 @@ const RoboQuest = () => {
               <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-bold text-white mb-4">Mission Challenge</h3>
-                  <div className="bg-gray-900 rounded-lg p-6 min-h-64">
-                    <div className="text-center text-gray-400">
-                      <Target className="h-12 w-12 mx-auto mb-4" />
-                      <p>Mission interface coming soon!</p>
-                      <p className="text-sm mt-2">Complete the challenge to earn stars and XP.</p>
-                    </div>
-                    <div className="mt-6 text-center">
-                      <Button 
-                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-                        onClick={() => completeLevel(selectedLevel.id, 3, 100)}
-                      >
-                        Complete Mission (Demo)
-                      </Button>
-                    </div>
+                  <div className="bg-blue-800/50 rounded-lg p-4 mb-6">
+                    <h4 className="font-bold text-white mb-2">Challenge: {selectedLevel.challenge}</h4>
+                    <p className="text-blue-200">Use the code blocks below to complete this mission!</p>
+                  </div>
+                  <CodingInterface 
+                    levelId={selectedLevel.id} 
+                    onCodeChange={(code) => console.log('Mission code:', code)} 
+                  />
+                  <div className="mt-6 text-center">
+                    <Button 
+                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                      onClick={() => completeLevel(selectedLevel.id, 3, 100)}
+                    >
+                      Complete Mission
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
