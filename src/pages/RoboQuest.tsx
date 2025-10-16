@@ -144,6 +144,76 @@ const challenges = {
     ],
     startPos: { x: 0, y: 0 },
     robotDirection: 'right'
+  },
+  6: {
+    title: "Conditionals - Stop at Obstacle",
+    description: "Make robot stop when it detects an obstacle",
+    challenge: "Navigate to the target while avoiding obstacles",
+    target: ["move-forward", "move-forward", "turn-right", "move-forward"],
+    grid: [
+      ['🤖', '⬜', '⬜', '🎯'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ],
+    startPos: { x: 0, y: 0 },
+    robotDirection: 'right'
+  },
+  7: {
+    title: "Combining Sensors - Multi-Sensor Task",
+    description: "Use both light and sound sensors to complete a task",
+    challenge: "Navigate using multiple sensor inputs",
+    target: ["move-forward", "turn-right", "move-forward"],
+    grid: [
+      ['🤖', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ],
+    startPos: { x: 0, y: 0 },
+    robotDirection: 'right'
+  },
+  8: {
+    title: "Task Automation - Factory Task",
+    description: "Automate a simple factory task",
+    challenge: "Complete the automated sequence",
+    target: ["move-forward", "turn-right", "move-forward"],
+    grid: [
+      ['🤖', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ],
+    startPos: { x: 0, y: 0 },
+    robotDirection: 'right'
+  },
+  9: {
+    title: "Optimization - Efficient Code",
+    description: "Learn to make code efficient",
+    challenge: "Complete the task with fewer commands",
+    target: ["move-forward", "turn-right", "move-forward"],
+    grid: [
+      ['🤖', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ],
+    startPos: { x: 0, y: 0 },
+    robotDirection: 'right'
+  },
+  10: {
+    title: "Final Mission - Rescue Mission",
+    description: "Complete a robotics rescue mission using full logic",
+    challenge: "Rescue the target using all learned skills",
+    target: ["move-forward", "turn-right", "move-forward", "turn-left"],
+    grid: [
+      ['🤖', '⬜', '⬜', '🎯'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ],
+    startPos: { x: 0, y: 0 },
+    robotDirection: 'right'
   }
 };
 
@@ -162,9 +232,11 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
 
   // Initialize robot position when component mounts
   useEffect(() => {
-    setRobotPosition(challenge.startPos);
-    setRobotDirection(challenge.robotDirection);
-    setSimulationPath([{ ...challenge.startPos, direction: challenge.robotDirection }]);
+    const startPos = challenge.startPos || { x: 0, y: 0 };
+    const direction = challenge.robotDirection || 'right';
+    setRobotPosition(startPos);
+    setRobotDirection(direction);
+    setSimulationPath([{ ...startPos, direction }]);
   }, [levelId, challenge.startPos, challenge.robotDirection]);
 
   const handleDragStart = (e: React.DragEvent, block: CodeBlock) => {
@@ -381,7 +453,7 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
         
         {/* Debug Info */}
         <div className="text-center text-xs text-gray-400 mb-2">
-          Robot Position: ({robotPosition.x}, {robotPosition.y}) | Direction: {robotDirection}
+          Robot Position: ({robotPosition.x}, {robotPosition.y}) | Direction: {robotDirection} | Level: {levelId}
         </div>
 
         {/* Challenge Grid */}
@@ -430,8 +502,19 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
           </div>
         </div>
         
-        {/* Run Button */}
-        <div className="mt-4 text-center">
+        {/* Control Buttons */}
+        <div className="mt-4 text-center space-x-2">
+          <Button 
+            size="sm" 
+            variant="outline"
+            className="text-white border-2 border-white hover:bg-white hover:text-gray-800 bg-transparent"
+            onClick={() => {
+              setRobotPosition(challenge.startPos || { x: 0, y: 0 });
+              setRobotDirection(challenge.robotDirection || 'right');
+            }}
+          >
+            Reset Robot
+          </Button>
           <Button 
             size="sm" 
             className={`${isRunning ? 'bg-yellow-500' : 'bg-green-500'} hover:bg-green-600 text-white border-2 border-green-400`}
