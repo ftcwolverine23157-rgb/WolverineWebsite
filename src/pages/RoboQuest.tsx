@@ -73,12 +73,53 @@ const codeBlocks: CodeBlock[] = [
   { id: 'turn-light-off', type: 'light', label: 'Turn Light Off', color: 'bg-orange-500', icon: '💡' },
 ];
 
+// Challenge data for different levels
+const challenges = {
+  1: {
+    title: "Make the robot move in a square!",
+    description: "Use Move Forward and Turn Right blocks to create a square path",
+    target: ["move-forward", "turn-right", "move-forward", "turn-right", "move-forward", "turn-right", "move-forward", "turn-right"],
+    grid: [
+      ['🎯', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['🤖', '⬜', '⬜', '⬜']
+    ]
+  },
+  2: {
+    title: "Navigate to the light!",
+    description: "Move forward and turn to reach the light source",
+    target: ["move-forward", "move-forward", "turn-right", "move-forward"],
+    grid: [
+      ['🤖', '⬜', '⬜', '💡'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ]
+  },
+  3: {
+    title: "Patrol the perimeter!",
+    description: "Use loops to make the robot patrol around the area",
+    target: ["repeat-3", "move-forward", "turn-right"],
+    grid: [
+      ['🤖', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜'],
+      ['⬜', '⬜', '⬜', '⬜']
+    ]
+  }
+};
+
 // Drag and Drop Coding Interface Component
 const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeChange: (code: CodeBlock[]) => void }) => {
   const [draggedBlock, setDraggedBlock] = useState<CodeBlock | null>(null);
   const [codeSequence, setCodeSequence] = useState<CodeBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
+  const [isRunning, setIsRunning] = useState(false);
   const dropZoneRef = useRef<HTMLDivElement>(null);
+  
+  const challenge = challenges[levelId as keyof typeof challenges] || challenges[1];
 
   const handleDragStart = (e: React.DragEvent, block: CodeBlock) => {
     setDraggedBlock(block);
@@ -118,10 +159,32 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
     onCodeChange([]);
   };
 
-  const runCode = () => {
-    // Simple animation simulation
-    console.log('Running code:', codeSequence);
-    // In a real implementation, this would control the virtual robot
+  const runCode = async () => {
+    if (isRunning) return;
+    
+    setIsRunning(true);
+    setRobotPosition({ x: 0, y: 0 });
+    
+    // Simulate robot movement
+    for (let i = 0; i < codeSequence.length; i++) {
+      const block = codeSequence[i];
+      await new Promise(resolve => setTimeout(resolve, 800)); // Delay for animation
+      
+      if (block.type === 'move' && block.id === 'move-forward') {
+        setRobotPosition(prev => ({ x: Math.min(3, prev.x + 1), y: prev.y }));
+      } else if (block.type === 'move' && block.id === 'move-backward') {
+        setRobotPosition(prev => ({ x: Math.max(0, prev.x - 1), y: prev.y }));
+      } else if (block.type === 'turn' && block.id === 'turn-right') {
+        // Robot turns in place
+        await new Promise(resolve => setTimeout(resolve, 400));
+      } else if (block.type === 'turn' && block.id === 'turn-left') {
+        // Robot turns in place
+        await new Promise(resolve => setTimeout(resolve, 400));
+      }
+    }
+    
+    setIsRunning(false);
+    console.log('Code execution completed!', codeSequence);
   };
 
   return (
@@ -153,17 +216,10 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
             <Button 
               size="sm" 
               variant="outline" 
-              className="text-white border-white hover:bg-white hover:text-gray-800"
+              className="text-white border-2 border-white hover:bg-white hover:text-gray-800 bg-transparent"
               onClick={clearCode}
             >
               Clear
-            </Button>
-            <Button 
-              size="sm" 
-              className="bg-green-500 hover:bg-green-600 text-white"
-              onClick={runCode}
-            >
-              Run Code
             </Button>
           </div>
         </div>
@@ -203,14 +259,43 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
         </div>
       </div>
 
-      {/* Virtual Robot Preview */}
+      {/* Challenge Area */}
       <div className="bg-gray-800 rounded-lg p-4">
-        <h4 className="text-white font-bold mb-4 text-lg">Robot Preview</h4>
-        <div className="bg-gray-900 rounded-lg p-6 min-h-32 flex items-center justify-center">
-          <div className="text-center text-gray-400">
-            <Bot className="h-16 w-16 mx-auto mb-2 text-blue-400" />
-            <p className="text-sm">Your robot will move here when you run the code!</p>
+        <div className="mb-4">
+          <h4 className="text-white font-bold text-lg mb-2">{challenge.title}</h4>
+          <p className="text-blue-200 text-sm">{challenge.description}</p>
+        </div>
+        
+        {/* Challenge Grid */}
+        <div className="bg-gray-900 rounded-lg p-4">
+          <div className="grid grid-cols-4 gap-1 max-w-xs mx-auto">
+            {challenge.grid.map((row, rowIndex) => 
+              row.map((cell, colIndex) => (
+                <div 
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`w-12 h-12 flex items-center justify-center text-2xl border border-gray-600 rounded ${
+                    rowIndex === robotPosition.y && colIndex === robotPosition.x 
+                      ? 'bg-blue-500 animate-pulse' 
+                      : 'bg-gray-800'
+                  }`}
+                >
+                  {rowIndex === robotPosition.y && colIndex === robotPosition.x ? '🤖' : cell}
+                </div>
+              ))
+            )}
           </div>
+        </div>
+        
+        {/* Run Button */}
+        <div className="mt-4 text-center">
+          <Button 
+            size="sm" 
+            className={`${isRunning ? 'bg-yellow-500' : 'bg-green-500'} hover:bg-green-600 text-white border-2 border-green-400`}
+            onClick={runCode}
+            disabled={isRunning || codeSequence.length === 0}
+          >
+            {isRunning ? 'Running...' : 'Run Code'}
+          </Button>
         </div>
       </div>
     </div>
@@ -562,7 +647,7 @@ const RoboQuest = () => {
           <div className="mb-8">
             <Button 
               variant="outline" 
-              className="text-white border-white hover:bg-white hover:text-blue-900 mb-4"
+              className="text-white border-2 border-white hover:bg-white hover:text-blue-900 mb-4 bg-transparent"
               onClick={() => setCurrentView('hub')}
             >
               ← Back to Hub
