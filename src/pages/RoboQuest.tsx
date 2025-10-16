@@ -240,13 +240,21 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
   };
 
   const runSimulation = async () => {
-    if (isRunning || codeBlocks.length === 0) return;
+    if (isRunning || codeBlocks.length === 0) {
+      console.log('Cannot run: isRunning =', isRunning, 'codeBlocks.length =', codeBlocks.length);
+      return;
+    }
     
+    console.log('Starting simulation with blocks:', codeBlocks);
     setIsRunning(true);
     resetRobot();
     
+    // Wait a moment for reset to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     for (let i = 0; i < codeBlocks.length; i++) {
       const block = codeBlocks[i];
+      console.log('Executing block:', block);
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       if (block.id === 'move-forward') {
@@ -254,24 +262,31 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
         else if (robotDir === 'left') setRobotX(prev => Math.max(0, prev - 1));
         else if (robotDir === 'up') setRobotY(prev => Math.max(0, prev - 1));
         else if (robotDir === 'down') setRobotY(prev => Math.min(3, prev + 1));
+        console.log('Moved forward, new position:', robotX, robotY);
       } else if (block.id === 'move-backward') {
         if (robotDir === 'right') setRobotX(prev => Math.max(0, prev - 1));
         else if (robotDir === 'left') setRobotX(prev => Math.min(3, prev + 1));
         else if (robotDir === 'up') setRobotY(prev => Math.min(3, prev + 1));
         else if (robotDir === 'down') setRobotY(prev => Math.max(0, prev - 1));
+        console.log('Moved backward, new position:', robotX, robotY);
       } else if (block.id === 'turn-right') {
         const dirs = ['right', 'down', 'left', 'up'];
         const current = dirs.indexOf(robotDir);
-        setRobotDir(dirs[(current + 1) % 4]);
+        const newDir = dirs[(current + 1) % 4];
+        setRobotDir(newDir);
+        console.log('Turned right, new direction:', newDir);
         await new Promise(resolve => setTimeout(resolve, 500));
       } else if (block.id === 'turn-left') {
         const dirs = ['right', 'down', 'left', 'up'];
         const current = dirs.indexOf(robotDir);
-        setRobotDir(dirs[(current - 1 + 4) % 4]);
+        const newDir = dirs[(current - 1 + 4) % 4];
+        setRobotDir(newDir);
+        console.log('Turned left, new direction:', newDir);
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
     
+    console.log('Simulation completed');
     setIsRunning(false);
   };
 
@@ -279,8 +294,11 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
     <div className="space-y-4">
       <div className="text-center">
         <h3 className="text-white font-bold mb-2">Robot Simulation</h3>
-        <p className="text-blue-200 text-sm mb-4">
+        <p className="text-blue-200 text-sm mb-2">
           Robot Position: ({robotX}, {robotY}) | Direction: {robotDir}
+        </p>
+        <p className="text-gray-400 text-xs mb-4">
+          Code Blocks: {codeBlocks.length} | {codeBlocks.map(b => b.label).join(', ')}
         </p>
       </div>
       
@@ -320,6 +338,17 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
           onClick={resetRobot}
         >
           Reset
+        </Button>
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="text-white border-2 border-yellow-400 hover:bg-yellow-400 hover:text-gray-800 bg-transparent"
+          onClick={() => {
+            console.log('Test move - current position:', robotX, robotY, 'direction:', robotDir);
+            setRobotX(prev => Math.min(3, prev + 1));
+          }}
+        >
+          Test Move
         </Button>
         <Button 
           size="sm" 
@@ -659,11 +688,11 @@ const RoboQuest = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-center space-x-4 mb-8">
             <Bot className="h-16 w-16 text-yellow-400" />
-            <h1 className="text-6xl font-bold text-white">RoboQuest</h1>
+            <h1 className="text-6xl font-bold text-white">RoboRun</h1>
           </div>
           <p className="text-xl text-blue-200 max-w-2xl mx-auto">
             Learn Robotics Through Play! Complete 10 exciting levels and earn your 
-            Junior Robotics Explorer certificate.
+            Junior Robotics Runner certificate.
           </p>
         </div>
 
@@ -731,7 +760,7 @@ const RoboQuest = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-20">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">Level Hub</h1>
+          <h1 className="text-5xl font-bold text-white mb-4">RoboRun Levels</h1>
           <p className="text-xl text-blue-200">Choose your next robotics adventure!</p>
         </div>
 
@@ -921,7 +950,7 @@ const RoboQuest = () => {
             You've completed all 10 levels and earned your
           </p>
           <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-4 rounded-2xl inline-block">
-            <h2 className="text-3xl font-bold">Junior Robotics Explorer Certificate</h2>
+            <h2 className="text-3xl font-bold">Junior Robotics Runner Certificate</h2>
           </div>
         </div>
 
@@ -931,9 +960,9 @@ const RoboQuest = () => {
               <Trophy className="h-20 w-20 text-yellow-400 mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-4">Certificate Details</h3>
               <div className="space-y-2 text-lg">
-                <p><strong>Name:</strong> RoboQuest Explorer</p>
+                <p><strong>Name:</strong> RoboRun Explorer</p>
                 <p><strong>Completion Date:</strong> {new Date().toLocaleDateString()}</p>
-                <p><strong>Verification ID:</strong> RQ-{Date.now().toString().slice(-8)}</p>
+                <p><strong>Verification ID:</strong> RR-{Date.now().toString().slice(-8)}</p>
                 <p><strong>Total XP Earned:</strong> {gameState.totalXP}</p>
                 <p><strong>Levels Completed:</strong> {gameState.completedLevels}/10</p>
               </div>
