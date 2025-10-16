@@ -12,7 +12,7 @@ const Navigation = () => {
     { path: '/', label: 'Home' },
     { path: '/team', label: 'Team' },
     { path: '/robot', label: 'Our Robot' },
-    // { path: '/blogs', label: 'Blogs' },
+    { path: '/roboquest', label: 'RoboQuest' },
     { path: '/outreach', label: 'Outreach' },
     { path: '/sponsor', label: 'Sponsor Us' },
   ];
