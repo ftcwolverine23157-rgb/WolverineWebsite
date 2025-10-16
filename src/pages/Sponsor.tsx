@@ -80,7 +80,19 @@ const Sponsor = () => {
     e.preventDefault();
     
     const deltaX = e.clientX - startX;
-    scrollRef.current.scrollLeft = startScrollLeft - deltaX;
+    const newScrollLeft = startScrollLeft - deltaX;
+    
+    // Handle infinite scrolling
+    const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
+    const halfScroll = maxScroll / 2;
+    
+    if (newScrollLeft < 0) {
+      scrollRef.current.scrollLeft = maxScroll + newScrollLeft;
+    } else if (newScrollLeft > maxScroll) {
+      scrollRef.current.scrollLeft = newScrollLeft - maxScroll;
+    } else {
+      scrollRef.current.scrollLeft = newScrollLeft;
+    }
   };
 
   const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -109,7 +121,18 @@ const Sponsor = () => {
       e.preventDefault();
       
       const deltaX = e.clientX - startX;
-      scrollRef.current.scrollLeft = startScrollLeft - deltaX;
+      const newScrollLeft = startScrollLeft - deltaX;
+      
+      // Handle infinite scrolling
+      const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
+      
+      if (newScrollLeft < 0) {
+        scrollRef.current.scrollLeft = maxScroll + newScrollLeft;
+      } else if (newScrollLeft > maxScroll) {
+        scrollRef.current.scrollLeft = newScrollLeft - maxScroll;
+      } else {
+        scrollRef.current.scrollLeft = newScrollLeft;
+      }
     };
 
     if (isDragging) {
@@ -237,10 +260,11 @@ const Sponsor = () => {
               {[...Array(2)].map((_, loopIndex) => (
                 <div key={loopIndex} className="flex space-x-12 flex-shrink-0">
                   <a 
-                    href="https://www.chick-fil-a.com" 
+                    href={isDragging ? undefined : "https://www.chick-fil-a.com"}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group"
+                    className={`group ${isDragging ? 'pointer-events-none' : ''}`}
+                    onClick={isDragging ? (e) => e.preventDefault() : undefined}
                   >
                     <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
@@ -254,10 +278,11 @@ const Sponsor = () => {
                   </a>
                   
                   <a 
-                    href="https://www.balajimess.com" 
+                    href={isDragging ? undefined : "https://www.balajimess.com"}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group"
+                    className={`group ${isDragging ? 'pointer-events-none' : ''}`}
+                    onClick={isDragging ? (e) => e.preventDefault() : undefined}
                   >
                     <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
@@ -271,10 +296,11 @@ const Sponsor = () => {
                   </a>
                   
                   <a 
-                    href="https://www.corvision.com/" 
+                    href={isDragging ? undefined : "https://www.corvision.com/"}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group"
+                    className={`group ${isDragging ? 'pointer-events-none' : ''}`}
+                    onClick={isDragging ? (e) => e.preventDefault() : undefined}
                   >
                     <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
@@ -288,10 +314,11 @@ const Sponsor = () => {
                   </a>
                   
                   <a 
-                    href="https://www.baskinrobbins.com" 
+                    href={isDragging ? undefined : "https://www.baskinrobbins.com"}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group"
+                    className={`group ${isDragging ? 'pointer-events-none' : ''}`}
+                    onClick={isDragging ? (e) => e.preventDefault() : undefined}
                   >
                     <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
@@ -305,10 +332,11 @@ const Sponsor = () => {
                   </a>
                   
                   <a 
-                    href="https://www.yelp.com/biz/delicious-donuts-and-bagels-newark" 
+                    href={isDragging ? undefined : "https://www.yelp.com/biz/delicious-donuts-and-bagels-newark"}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group"
+                    className={`group ${isDragging ? 'pointer-events-none' : ''}`}
+                    onClick={isDragging ? (e) => e.preventDefault() : undefined}
                   >
                     <Card className="p-8 text-center hover:shadow-lg transition-all duration-300 w-80 h-48 flex items-center justify-center">
                       <CardContent className="p-0">
