@@ -56,7 +56,10 @@ interface CodeBlock {
   label: string;
   color: string;
   icon: string;
-  params?: Record<string, unknown>;
+  params?: {
+    repeatCount?: number;
+    [key: string]: unknown;
+  };
   children?: CodeBlock[]; // For repeat blocks that wrap other blocks
 }
 
@@ -65,10 +68,7 @@ const codeBlocks: CodeBlock[] = [
   { id: 'move-backward', type: 'move', label: 'Move Backward', color: 'bg-blue-500', icon: '↓' },
   { id: 'turn-left', type: 'turn', label: 'Turn Left', color: 'bg-green-500', icon: '↶' },
   { id: 'turn-right', type: 'turn', label: 'Turn Right', color: 'bg-green-500', icon: '↷' },
-  { id: 'repeat-3', type: 'repeat', label: 'Repeat 3 Times', color: 'bg-purple-500', icon: '🔄' },
-  { id: 'repeat-5', type: 'repeat', label: 'Repeat 5 Times', color: 'bg-purple-500', icon: '🔄' },
-  { id: 'wait-1', type: 'wait', label: 'Wait 1 Second', color: 'bg-yellow-500', icon: '⏱️' },
-  { id: 'wait-2', type: 'wait', label: 'Wait 2 Seconds', color: 'bg-yellow-500', icon: '⏱️' },
+  { id: 'repeat', type: 'repeat', label: 'Repeat', color: 'bg-purple-500', icon: '🔄', params: { repeatCount: 3 } },
   { id: 'play-sound', type: 'sound', label: 'Play Sound', color: 'bg-pink-500', icon: '🔊' },
   { id: 'turn-light-on', type: 'light', label: 'Turn Light On', color: 'bg-orange-500', icon: '💡' },
   { id: 'turn-light-off', type: 'light', label: 'Turn Light Off', color: 'bg-orange-500', icon: '💡' },
@@ -467,10 +467,14 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
   // Get repeat count from block id
-  const getRepeatCount = (blockId: string): number => {
-    if (blockId.includes('repeat-3')) return 3;
-    if (blockId.includes('repeat-5')) return 5;
-    return 0;
+  const getRepeatCount = (block: CodeBlock): number => {
+    if (block.params && typeof block.params.repeatCount === 'number') {
+      return Math.max(1, Math.floor(block.params.repeatCount));
+    }
+    // Back-compat if id encoded the count
+    const parts = block.id.split('-');
+    const maybeNum = parseInt(parts[1]);
+    return Number.isFinite(maybeNum) ? Math.max(1, maybeNum) : 1;
   };
 
   // Flatten code blocks for simulation (expand repeat blocks)
@@ -478,7 +482,7 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
     const result: CodeBlock[] = [];
     for (const block of blocks) {
       if (block.type === 'repeat' && block.children && block.children.length > 0) {
-        const repeatCount = getRepeatCount(block.id);
+        const repeatCount = getRepeatCount(block);
         for (let i = 0; i < repeatCount; i++) {
           result.push(...flattenCodeBlocks(block.children));
         }
@@ -644,7 +648,8 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
       const repeatBlock: CodeBlock = {
         ...draggedBlock,
         id: `${draggedBlock.id}-${Date.now()}`,
-        children: []
+        children: [],
+        params: { repeatCount: (draggedBlock.params?.repeatCount as number) || 3 }
       };
       newCodeSequence.splice(insertIndex, 0, repeatBlock);
     } else {
@@ -1270,6 +1275,15 @@ const RoboQuest = () => {
       const executed = flattenForEvaluation(code);
 
       // Success if executed starts with target in order
+      if (executed.length < target.length) {
+        return {
+          success: false,
+          stars: 0,
+          xp: 0,
+          feedback: `Add more steps. You need at least ${target.length} step(s).`
+        };
+      }
+
       let success = true;
       for (let i = 0; i < target.length; i++) {
         if (executed[i] !== target[i]) {
@@ -1303,6 +1317,22 @@ const RoboQuest = () => {
       return { success: true, stars, xp, feedback };
     };
 
+    const goalTokens = (challenges[selectedLevel.id as keyof typeof challenges]?.target || []) as string[];
+    const formatToken = (token: string) => {
+      const base = token.split('-').slice(0, 2).join('-');
+      switch (base) {
+        case 'move-forward': return 'Move Forward';
+        case 'move-backward': return 'Move Backward';
+        case 'turn-right': return 'Turn Right';
+        case 'turn-left': return 'Turn Left';
+        case 'repeat-3': return 'Repeat x3 (wrap steps)';
+        case 'repeat-5': return 'Repeat x5 (wrap steps)';
+        case 'wait-1': return 'Wait 1s';
+        case 'wait-2': return 'Wait 2s';
+        default: return base;
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-20">
         <div className="max-w-6xl mx-auto px-4">
@@ -1333,8 +1363,18 @@ const RoboQuest = () => {
                   <div className="text-blue-200 space-y-4">
                     <p>{selectedLevel.description}</p>
                     <div className="bg-blue-800/50 rounded-lg p-4">
-                      <h4 className="font-bold text-white mb-2">Challenge:</h4>
-                      <p>{selectedLevel.challenge}</p>
+                      <h4 className="font-bold text-white mb-2">Challenge</h4>
+                      <p className="mb-3">{selectedLevel.challenge}</p>
+                      <div className="text-blue-100">
+                        <div className="font-semibold mb-1">Level Goal (Steps)</div>
+                        <div className="flex flex-wrap gap-2">
+                          {goalTokens.map((t, i) => (
+                            <span key={i} className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-200 border border-yellow-400/40 text-xs">
+                              {formatToken(t)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -1361,6 +1401,16 @@ const RoboQuest = () => {
                   <div className="bg-blue-800/50 rounded-lg p-4 mb-6">
                     <h4 className="font-bold text-white mb-2">Challenge: {selectedLevel.challenge}</h4>
                     <p className="text-blue-200">Use the code blocks below to complete this mission!</p>
+                    <div className="mt-3 text-blue-100">
+                      <div className="font-semibold mb-1">Level Goal (Checks on Grade)</div>
+                      <div className="flex flex-wrap gap-2">
+                        {goalTokens.map((t, i) => (
+                          <span key={i} className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-200 border border-yellow-400/40 text-xs">
+                            {formatToken(t)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <CodingInterface 
                     levelId={selectedLevel.id} 
@@ -1370,7 +1420,7 @@ const RoboQuest = () => {
                     <div className="space-y-3">
                       <Button 
                         className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-                        disabled={isGrading}
+                        disabled={isGrading || missionCode.length === 0}
                         onClick={() => {
                           setIsGrading(true);
                           const result = evaluateMission(selectedLevel.id, missionCode);
@@ -1383,6 +1433,9 @@ const RoboQuest = () => {
                       >
                         {isGrading ? 'Grading...' : 'Run & Grade Mission'}
                       </Button>
+                      {missionCode.length === 0 && (
+                        <div className="text-blue-300 text-sm">Add blocks first, then grade.</div>
+                      )}
                       {missionFeedback && (
                         <div className="text-blue-200">{missionFeedback}</div>
                       )}
