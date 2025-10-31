@@ -319,58 +319,6 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
         setRobotDir(currentDir);
         console.log('Turned left, new direction:', currentDir);
         await new Promise(resolve => setTimeout(resolve, 300));
-      } else if (block.id.startsWith('repeat-')) {
-        // Handle repeat blocks - extract the number and execute following blocks
-        const repeatCount = parseInt(block.id.split('-')[1]) || 3;
-        // Find blocks to repeat (all non-repeat blocks until next repeat or end)
-        const blocksToRepeat: CodeBlock[] = [];
-        for (let j = i + 1; j < codeBlocks.length; j++) {
-          if (codeBlocks[j].id.startsWith('repeat-')) break;
-          blocksToRepeat.push(codeBlocks[j]);
-        }
-        
-        // Execute the blocks repeatCount times
-        for (let r = 0; r < repeatCount; r++) {
-          for (const repeatBlock of blocksToRepeat) {
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            if (repeatBlock.id.startsWith('move-forward')) {
-              if (currentDir === 'right') currentX = Math.min(3, currentX + 1);
-              else if (currentDir === 'left') currentX = Math.max(0, currentX - 1);
-              else if (currentDir === 'up') currentY = Math.max(0, currentY - 1);
-              else if (currentDir === 'down') currentY = Math.min(3, currentY + 1);
-              setRobotX(currentX);
-              setRobotY(currentY);
-            } else if (repeatBlock.id.startsWith('move-backward')) {
-              if (currentDir === 'right') currentX = Math.max(0, currentX - 1);
-              else if (currentDir === 'left') currentX = Math.min(3, currentX + 1);
-              else if (currentDir === 'up') currentY = Math.min(3, currentY + 1);
-              else if (currentDir === 'down') currentY = Math.max(0, currentY - 1);
-              setRobotX(currentX);
-              setRobotY(currentY);
-            } else if (repeatBlock.id.startsWith('turn-right')) {
-              const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
-              const current = dirs.indexOf(currentDir);
-              currentDir = dirs[(current + 1) % 4];
-              setRobotDir(currentDir);
-              await new Promise(resolve => setTimeout(resolve, 300));
-            } else if (repeatBlock.id.startsWith('turn-left')) {
-              const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
-              const current = dirs.indexOf(currentDir);
-              currentDir = dirs[(current - 1 + 4) % 4];
-              setRobotDir(currentDir);
-              await new Promise(resolve => setTimeout(resolve, 300));
-            } else if (repeatBlock.id.startsWith('wait-')) {
-              const waitTime = parseInt(repeatBlock.id.split('-')[1]) || 1;
-              await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
-            }
-          }
-        }
-        // Skip the blocks that were repeated
-        i += blocksToRepeat.length;
-      } else if (block.id.startsWith('wait-')) {
-        const waitTime = parseInt(block.id.split('-')[1]) || 1;
-        await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
       }
     }
     
@@ -741,6 +689,33 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
               <div className="absolute -top-1 left-6 w-6 h-2 bg-white/20 rounded-t-md" />
               <span className="text-lg">{block.icon}</span>
               <span>{block.label}</span>
+              {/* Repeat count input */}
+              <div className="flex items-center space-x-1 ml-2">
+                <span className="text-xs opacity-80">x</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={getRepeatCount(block)}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    const val = Math.max(1, Math.min(20, parseInt(e.target.value || '1')));
+                    // Update repeatCount at path
+                    const newBlocks = JSON.parse(JSON.stringify(codeSequence)) as CodeBlock[];
+                    // Navigate to this block
+                    let target = newBlocks as CodeBlock[];
+                    for (let i = 0; i < path.length; i++) {
+                      target = target[path[i]].children || [];
+                    }
+                    if (!target[index].params) target[index].params = {};
+                    target[index].params!.repeatCount = val;
+                    setCodeSequence(newBlocks);
+                    onCodeChange(newBlocks);
+                  }}
+                  className="w-12 h-6 text-xs text-black rounded px-1"
+                />
+                <span className="text-xs opacity-80">times</span>
+              </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -767,10 +742,10 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
               {block.children && block.children.length > 0 ? (
                 <div className="flex flex-col gap-2">
                   {block.children.map((child, childIndex) => (
-                    <>
+                    <div key={`wrap-${[...path, index].join('-')}-${child.id}-${childIndex}`}>
                       {renderBlock(child, childIndex, [...path, index], true)}
                       {renderInsertionSlot([...path, index], childIndex + 1)}
-                    </>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -875,10 +850,10 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
               {/* Top-level start slot */}
               {renderInsertionSlot([], 0)}
               {codeSequence.map((block, index) => (
-                <>
+                <div key={`top-wrap-${block.id}-${index}`}>
                   {renderBlock(block, index, [])}
                   {renderInsertionSlot([], index + 1)}
-                </>
+                </div>
               ))}
             </div>
           )}
