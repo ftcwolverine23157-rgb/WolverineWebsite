@@ -1161,7 +1161,17 @@ const RoboQuest = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4">RoboRun Levels</h1>
-          <p className="text-xl text-blue-200">Choose your next robotics adventure!</p>
+          <p className="text-xl text-blue-200 mb-6">Choose your next robotics adventure!</p>
+          <div className="max-w-2xl mx-auto text-left bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div className="flex justify-between text-white text-sm mb-2">
+              <span>Progress</span>
+              <span className="font-bold">{gameState.completedLevels}/10 levels</span>
+            </div>
+            <Progress value={(gameState.completedLevels / 10) * 100} className="h-3" />
+            <div className="text-blue-200 text-sm mt-2 text-center">
+              {gameState.completedLevels >= 5 ? "You're halfway to your robotics certificate!" : "Keep going! Your certificate is getting closer."}
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4 mb-12">
@@ -1225,6 +1235,74 @@ const RoboQuest = () => {
   const LevelView = () => {
     if (!selectedLevel) return null;
 
+    // Track mission code and grading result for the current level
+    const [missionCode, setMissionCode] = useState<CodeBlock[]>([]);
+    const [missionFeedback, setMissionFeedback] = useState<string>('');
+    const [isGrading, setIsGrading] = useState(false);
+
+    // Helpers to evaluate mission completion against PRD targets
+    const getRepeatCount = (blockId: string): number => {
+      if (blockId.includes('repeat-3')) return 3;
+      if (blockId.includes('repeat-5')) return 5;
+      return 0;
+    };
+
+    const flattenForEvaluation = (blocks: CodeBlock[]): string[] => {
+      const result: string[] = [];
+      for (const block of blocks) {
+        if (block.type === 'repeat' && block.children && block.children.length > 0) {
+          const repeatCount = getRepeatCount(block.id);
+          for (let i = 0; i < repeatCount; i++) {
+            result.push(...flattenForEvaluation(block.children));
+          }
+        } else {
+          // Normalize id to base command (e.g., move-forward) for comparison
+          const base = block.id.split('-').slice(0, 2).join('-');
+          result.push(base);
+        }
+      }
+      return result;
+    };
+
+    const evaluateMission = (levelId: number, code: CodeBlock[]) => {
+      const challenge = (challenges as any)[levelId];
+      const target: string[] = challenge?.target || [];
+      const executed = flattenForEvaluation(code);
+
+      // Success if executed starts with target in order
+      let success = true;
+      for (let i = 0; i < target.length; i++) {
+        if (executed[i] !== target[i]) {
+          success = false;
+          break;
+        }
+      }
+
+      if (!success) {
+        return {
+          success: false,
+          stars: 0,
+          xp: 0,
+          feedback: 'Try again: make sure your first steps match the mission sequence.'
+        };
+      }
+
+      const extra = Math.max(0, executed.length - target.length);
+      let stars = 3;
+      if (extra > 0 && extra <= 2) stars = 2; else if (extra > 2) stars = 1;
+      const xpBase = 100;
+      const xpPenalty = Math.min(50, extra * 5);
+      const xp = Math.max(50, xpBase - xpPenalty);
+
+      const feedback = stars === 3
+        ? 'Perfect! Exact solution achieved.'
+        : stars === 2
+          ? 'Nice! You solved it with a few extra steps.'
+          : 'Good job! Can you make it more efficient?';
+
+      return { success: true, stars, xp, feedback };
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-20">
         <div className="max-w-6xl mx-auto px-4">
@@ -1286,15 +1364,29 @@ const RoboQuest = () => {
                   </div>
                   <CodingInterface 
                     levelId={selectedLevel.id} 
-                    onCodeChange={(code) => console.log('Mission code:', code)} 
+                    onCodeChange={(code) => setMissionCode(code)} 
                   />
                   <div className="mt-6 text-center">
-                    <Button 
-                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-                      onClick={() => completeLevel(selectedLevel.id, 3, 100)}
-                    >
-                      Complete Mission
-                    </Button>
+                    <div className="space-y-3">
+                      <Button 
+                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                        disabled={isGrading}
+                        onClick={() => {
+                          setIsGrading(true);
+                          const result = evaluateMission(selectedLevel.id, missionCode);
+                          setMissionFeedback(result.feedback);
+                          setIsGrading(false);
+                          if (result.success) {
+                            completeLevel(selectedLevel.id, result.stars, result.xp);
+                          }
+                        }}
+                      >
+                        {isGrading ? 'Grading...' : 'Run & Grade Mission'}
+                      </Button>
+                      {missionFeedback && (
+                        <div className="text-blue-200">{missionFeedback}</div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
