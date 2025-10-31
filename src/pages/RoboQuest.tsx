@@ -721,7 +721,7 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
           key={`${block.id}-${index}`}
           className="relative"
         >
-          <div className={`${block.color} text-white rounded-lg border-2 ${
+          <div className={`${block.color} text-white rounded-lg border-2 relative overflow-hidden ${
             (isDragOver || (dragOverPath && JSON.stringify([...path, index]) === JSON.stringify(dragOverPath))) 
               ? 'border-yellow-400' : 'border-purple-600'
           } ${isDragged ? 'opacity-50' : ''}`}>
@@ -732,6 +732,8 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
               onDragEnd={handleDragEnd}
               className="p-3 flex items-center space-x-2 font-bold text-sm cursor-grab active:cursor-grabbing"
             >
+              {/* Top puzzle tab for repeat */}
+              <div className="absolute -top-1 left-6 w-6 h-2 bg-white/20 rounded-t-md" />
               <span className="text-lg">{block.icon}</span>
               <span>{block.label}</span>
               <button
@@ -747,12 +749,14 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
             
             {/* Repeat block children container */}
             <div 
-              className={`min-h-12 p-2 rounded-b-lg border-t-2 ${
+              className={`min-h-12 p-2 rounded-b-lg border-t-2 relative ${
                 (dragOverPath && JSON.stringify([...path, index]) === JSON.stringify(dragOverPath))
                   ? 'bg-yellow-400/20 border-yellow-400' 
                   : 'bg-purple-600/20 border-purple-600/50'
               }`}
             >
+              {/* Bottom puzzle notch for repeat */}
+              <div className="absolute -bottom-1 left-6 w-6 h-2 bg-black/20 rounded-b-md" />
               {/* Insertion slot at the start of children */}
               {renderInsertionSlot([...path, index], 0)}
               {block.children && block.children.length > 0 ? (
