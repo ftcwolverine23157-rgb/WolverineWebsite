@@ -1233,12 +1233,12 @@ const RoboQuest = () => {
 
   // Level Component
   const LevelView = () => {
-    if (!selectedLevel) return null;
-
     // Track mission code and grading result for the current level
     const [missionCode, setMissionCode] = useState<CodeBlock[]>([]);
     const [missionFeedback, setMissionFeedback] = useState<string>('');
     const [isGrading, setIsGrading] = useState(false);
+
+    if (!selectedLevel) return null;
 
     // Helpers to evaluate mission completion against PRD targets
     const getRepeatCount = (blockId: string): number => {
@@ -1265,7 +1265,7 @@ const RoboQuest = () => {
     };
 
     const evaluateMission = (levelId: number, code: CodeBlock[]) => {
-      const challenge = (challenges as any)[levelId];
+      const challenge = challenges[levelId as keyof typeof challenges];
       const target: string[] = challenge?.target || [];
       const executed = flattenForEvaluation(code);
 
