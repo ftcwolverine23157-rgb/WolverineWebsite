@@ -279,7 +279,7 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
       console.log('Executing block:', block.id, 'at position:', currentX, currentY, 'direction:', currentDir);
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      if (block.id === 'move-forward') {
+      if (block.id.startsWith('move-forward')) {
         if (currentDir === 'right') {
           currentX = Math.min(3, currentX + 1);
         } else if (currentDir === 'left') {
@@ -292,7 +292,7 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
         setRobotX(currentX);
         setRobotY(currentY);
         console.log('Moved forward, new position:', currentX, currentY);
-      } else if (block.id === 'move-backward') {
+      } else if (block.id.startsWith('move-backward')) {
         if (currentDir === 'right') {
           currentX = Math.max(0, currentX - 1);
         } else if (currentDir === 'left') {
@@ -305,14 +305,14 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
         setRobotX(currentX);
         setRobotY(currentY);
         console.log('Moved backward, new position:', currentX, currentY);
-      } else if (block.id === 'turn-right') {
+      } else if (block.id.startsWith('turn-right')) {
         const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
         const current = dirs.indexOf(currentDir);
         currentDir = dirs[(current + 1) % 4];
         setRobotDir(currentDir);
         console.log('Turned right, new direction:', currentDir);
         await new Promise(resolve => setTimeout(resolve, 300));
-      } else if (block.id === 'turn-left') {
+      } else if (block.id.startsWith('turn-left')) {
         const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
         const current = dirs.indexOf(currentDir);
         currentDir = dirs[(current - 1 + 4) % 4];
@@ -334,27 +334,27 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
           for (const repeatBlock of blocksToRepeat) {
             await new Promise(resolve => setTimeout(resolve, 800));
             
-            if (repeatBlock.id === 'move-forward') {
+            if (repeatBlock.id.startsWith('move-forward')) {
               if (currentDir === 'right') currentX = Math.min(3, currentX + 1);
               else if (currentDir === 'left') currentX = Math.max(0, currentX - 1);
               else if (currentDir === 'up') currentY = Math.max(0, currentY - 1);
               else if (currentDir === 'down') currentY = Math.min(3, currentY + 1);
               setRobotX(currentX);
               setRobotY(currentY);
-            } else if (repeatBlock.id === 'move-backward') {
+            } else if (repeatBlock.id.startsWith('move-backward')) {
               if (currentDir === 'right') currentX = Math.max(0, currentX - 1);
               else if (currentDir === 'left') currentX = Math.min(3, currentX + 1);
               else if (currentDir === 'up') currentY = Math.min(3, currentY + 1);
               else if (currentDir === 'down') currentY = Math.max(0, currentY - 1);
               setRobotX(currentX);
               setRobotY(currentY);
-            } else if (repeatBlock.id === 'turn-right') {
+            } else if (repeatBlock.id.startsWith('turn-right')) {
               const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
               const current = dirs.indexOf(currentDir);
               currentDir = dirs[(current + 1) % 4];
               setRobotDir(currentDir);
               await new Promise(resolve => setTimeout(resolve, 300));
-            } else if (repeatBlock.id === 'turn-left') {
+            } else if (repeatBlock.id.startsWith('turn-left')) {
               const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
               const current = dirs.indexOf(currentDir);
               currentDir = dirs[(current - 1 + 4) % 4];
@@ -434,7 +434,10 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
           className="text-white border-2 border-yellow-400 hover:bg-yellow-400 hover:text-gray-800 bg-transparent"
           onClick={() => {
             console.log('Test move - current position:', robotX, robotY, 'direction:', robotDir);
-            setRobotX(prev => Math.min(3, prev + 1));
+            if (robotDir === 'right') setRobotX(prev => Math.min(3, prev + 1));
+            else if (robotDir === 'left') setRobotX(prev => Math.max(0, prev - 1));
+            else if (robotDir === 'up') setRobotY(prev => Math.max(0, prev - 1));
+            else if (robotDir === 'down') setRobotY(prev => Math.min(3, prev + 1));
           }}
         >
           Test Move
@@ -515,6 +518,26 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
   const handleDragLeave = () => {
     setDragOverIndex(null);
     setDragOverPath(null);
+  };
+
+  // Scratch-like insertion slot between blocks
+  const renderInsertionSlot = (path: number[], insertIndex: number) => {
+    const isActive = dragOverPath && JSON.stringify(dragOverPath) === JSON.stringify([...path, insertIndex, -1]);
+    return (
+      <div
+        key={`slot-${[...path, insertIndex].join('-')}`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setDragOverIndex(-1);
+          setDragOverPath([...path, insertIndex, -1]);
+        }}
+        onDrop={(e) => handleDrop(e, insertIndex, path)}
+        className={`h-3 my-1 rounded ${
+          isActive ? 'bg-yellow-400/40' : 'bg-transparent'
+        } border-dashed ${isActive ? 'border-yellow-400' : 'border-transparent'} border-2 transition-colors`}
+      />
+    );
   };
 
   const insertBlockAtPath = (blocks: CodeBlock[], block: CodeBlock, insertIndex: number, insertPath: number[]): CodeBlock[] => {
@@ -729,26 +752,17 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
                   ? 'bg-yellow-400/20 border-yellow-400' 
                   : 'bg-purple-600/20 border-purple-600/50'
               }`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (draggedBlock && draggedBlock.type !== 'repeat') {
-                  setDragOverPath([...path, index]);
-                }
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (draggedBlock && draggedBlock.type !== 'repeat') {
-                  handleDrop(e, undefined, [...path, index]);
-                }
-              }}
             >
+              {/* Insertion slot at the start of children */}
+              {renderInsertionSlot([...path, index], 0)}
               {block.children && block.children.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {block.children.map((child, childIndex) => 
-                    renderBlock(child, childIndex, [...path, index], true)
-                  )}
+                <div className="flex flex-col gap-2">
+                  {block.children.map((child, childIndex) => (
+                    <>
+                      {renderBlock(child, childIndex, [...path, index], true)}
+                      {renderInsertionSlot([...path, index], childIndex + 1)}
+                    </>
+                  ))}
                 </div>
               ) : (
                 <div className="text-gray-400 text-xs text-center py-2">
@@ -772,12 +786,16 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
             handleDragOver(e, index, path);
           }}
           onDrop={(e) => handleDrop(e, index, path)}
-          className={`${block.color} text-white p-3 rounded-lg flex items-center space-x-2 font-bold text-sm cursor-grab active:cursor-grabbing ${
+          className={`${block.color} text-white p-3 rounded-lg flex items-center space-x-2 font-bold text-sm cursor-grab active:cursor-grabbing relative overflow-hidden ${
             isDragOver ? 'ring-2 ring-yellow-400' : ''
           } ${isDragged ? 'opacity-50' : ''} hover:opacity-90 transition-opacity`}
         >
+          {/* Top puzzle tab */}
+          <div className="absolute -top-1 left-6 w-6 h-2 bg-white/20 rounded-t-md" />
           <span className="text-lg">{block.icon}</span>
           <span>{block.label}</span>
+          {/* Bottom puzzle notch */}
+          <div className="absolute -bottom-1 left-6 w-6 h-2 bg-black/20 rounded-b-md" />
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -845,7 +863,14 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              {codeSequence.map((block, index) => renderBlock(block, index, []))}
+              {/* Top-level start slot */}
+              {renderInsertionSlot([], 0)}
+              {codeSequence.map((block, index) => (
+                <>
+                  {renderBlock(block, index, [])}
+                  {renderInsertionSlot([], index + 1)}
+                </>
+              ))}
             </div>
           )}
         </div>
