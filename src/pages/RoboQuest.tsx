@@ -57,6 +57,7 @@ interface CodeBlock {
   color: string;
   icon: string;
   params?: Record<string, unknown>;
+  children?: CodeBlock[]; // For repeat blocks that wrap other blocks
 }
 
 const codeBlocks: CodeBlock[] = [
@@ -219,23 +220,35 @@ const challenges = {
 
 // Simple Robot Simulation Component
 const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks: CodeBlock[] }) => {
-  const [robotX, setRobotX] = useState(0);
-  const [robotY, setRobotY] = useState(0);
-  const [robotDir, setRobotDir] = useState('right');
-  const [isRunning, setIsRunning] = useState(false);
-
-  // Simple grid for all levels
-  const grid = [
+  // Get level challenge data for start position
+  const levelChallenge = challenges[levelId as keyof typeof challenges];
+  const startX = levelChallenge?.startPos?.x ?? 0;
+  const startY = levelChallenge?.startPos?.y ?? 0;
+  const startDir = levelChallenge?.robotDirection ?? 'right';
+  const levelGrid = levelChallenge?.grid ?? [
     ['🤖', '⬜', '⬜', '🎯'],
     ['⬜', '⬜', '⬜', '⬜'],
     ['⬜', '⬜', '⬜', '⬜'],
     ['⬜', '⬜', '⬜', '⬜']
   ];
 
+  const [robotX, setRobotX] = useState(startX);
+  const [robotY, setRobotY] = useState(startY);
+  const [robotDir, setRobotDir] = useState(startDir);
+  const [isRunning, setIsRunning] = useState(false);
+
+  // Reset robot position when level changes
+  useEffect(() => {
+    setRobotX(startX);
+    setRobotY(startY);
+    setRobotDir(startDir);
+    setIsRunning(false);
+  }, [levelId, startX, startY, startDir]);
+
   const resetRobot = () => {
-    setRobotX(0);
-    setRobotY(0);
-    setRobotDir('right');
+    setRobotX(startX);
+    setRobotY(startY);
+    setRobotDir(startDir);
     setIsRunning(false);
   };
 
@@ -247,42 +260,117 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
     
     console.log('Starting simulation with blocks:', codeBlocks);
     setIsRunning(true);
-    resetRobot();
+    
+    // Reset robot position
+    let currentX = startX;
+    let currentY = startY;
+    let currentDir: 'right' | 'down' | 'left' | 'up' = startDir as 'right' | 'down' | 'left' | 'up';
+    
+    // Update React state for display
+    setRobotX(startX);
+    setRobotY(startY);
+    setRobotDir(startDir);
     
     // Wait a moment for reset to complete
     await new Promise(resolve => setTimeout(resolve, 100));
     
     for (let i = 0; i < codeBlocks.length; i++) {
       const block = codeBlocks[i];
-      console.log('Executing block:', block);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Executing block:', block.id, 'at position:', currentX, currentY, 'direction:', currentDir);
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       if (block.id === 'move-forward') {
-        if (robotDir === 'right') setRobotX(prev => Math.min(3, prev + 1));
-        else if (robotDir === 'left') setRobotX(prev => Math.max(0, prev - 1));
-        else if (robotDir === 'up') setRobotY(prev => Math.max(0, prev - 1));
-        else if (robotDir === 'down') setRobotY(prev => Math.min(3, prev + 1));
-        console.log('Moved forward, new position:', robotX, robotY);
+        if (currentDir === 'right') {
+          currentX = Math.min(3, currentX + 1);
+        } else if (currentDir === 'left') {
+          currentX = Math.max(0, currentX - 1);
+        } else if (currentDir === 'up') {
+          currentY = Math.max(0, currentY - 1);
+        } else if (currentDir === 'down') {
+          currentY = Math.min(3, currentY + 1);
+        }
+        setRobotX(currentX);
+        setRobotY(currentY);
+        console.log('Moved forward, new position:', currentX, currentY);
       } else if (block.id === 'move-backward') {
-        if (robotDir === 'right') setRobotX(prev => Math.max(0, prev - 1));
-        else if (robotDir === 'left') setRobotX(prev => Math.min(3, prev + 1));
-        else if (robotDir === 'up') setRobotY(prev => Math.min(3, prev + 1));
-        else if (robotDir === 'down') setRobotY(prev => Math.max(0, prev - 1));
-        console.log('Moved backward, new position:', robotX, robotY);
+        if (currentDir === 'right') {
+          currentX = Math.max(0, currentX - 1);
+        } else if (currentDir === 'left') {
+          currentX = Math.min(3, currentX + 1);
+        } else if (currentDir === 'up') {
+          currentY = Math.min(3, currentY + 1);
+        } else if (currentDir === 'down') {
+          currentY = Math.max(0, currentY - 1);
+        }
+        setRobotX(currentX);
+        setRobotY(currentY);
+        console.log('Moved backward, new position:', currentX, currentY);
       } else if (block.id === 'turn-right') {
-        const dirs = ['right', 'down', 'left', 'up'];
-        const current = dirs.indexOf(robotDir);
-        const newDir = dirs[(current + 1) % 4];
-        setRobotDir(newDir);
-        console.log('Turned right, new direction:', newDir);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
+        const current = dirs.indexOf(currentDir);
+        currentDir = dirs[(current + 1) % 4];
+        setRobotDir(currentDir);
+        console.log('Turned right, new direction:', currentDir);
+        await new Promise(resolve => setTimeout(resolve, 300));
       } else if (block.id === 'turn-left') {
-        const dirs = ['right', 'down', 'left', 'up'];
-        const current = dirs.indexOf(robotDir);
-        const newDir = dirs[(current - 1 + 4) % 4];
-        setRobotDir(newDir);
-        console.log('Turned left, new direction:', newDir);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
+        const current = dirs.indexOf(currentDir);
+        currentDir = dirs[(current - 1 + 4) % 4];
+        setRobotDir(currentDir);
+        console.log('Turned left, new direction:', currentDir);
+        await new Promise(resolve => setTimeout(resolve, 300));
+      } else if (block.id.startsWith('repeat-')) {
+        // Handle repeat blocks - extract the number and execute following blocks
+        const repeatCount = parseInt(block.id.split('-')[1]) || 3;
+        // Find blocks to repeat (all non-repeat blocks until next repeat or end)
+        const blocksToRepeat: CodeBlock[] = [];
+        for (let j = i + 1; j < codeBlocks.length; j++) {
+          if (codeBlocks[j].id.startsWith('repeat-')) break;
+          blocksToRepeat.push(codeBlocks[j]);
+        }
+        
+        // Execute the blocks repeatCount times
+        for (let r = 0; r < repeatCount; r++) {
+          for (const repeatBlock of blocksToRepeat) {
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            if (repeatBlock.id === 'move-forward') {
+              if (currentDir === 'right') currentX = Math.min(3, currentX + 1);
+              else if (currentDir === 'left') currentX = Math.max(0, currentX - 1);
+              else if (currentDir === 'up') currentY = Math.max(0, currentY - 1);
+              else if (currentDir === 'down') currentY = Math.min(3, currentY + 1);
+              setRobotX(currentX);
+              setRobotY(currentY);
+            } else if (repeatBlock.id === 'move-backward') {
+              if (currentDir === 'right') currentX = Math.max(0, currentX - 1);
+              else if (currentDir === 'left') currentX = Math.min(3, currentX + 1);
+              else if (currentDir === 'up') currentY = Math.min(3, currentY + 1);
+              else if (currentDir === 'down') currentY = Math.max(0, currentY - 1);
+              setRobotX(currentX);
+              setRobotY(currentY);
+            } else if (repeatBlock.id === 'turn-right') {
+              const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
+              const current = dirs.indexOf(currentDir);
+              currentDir = dirs[(current + 1) % 4];
+              setRobotDir(currentDir);
+              await new Promise(resolve => setTimeout(resolve, 300));
+            } else if (repeatBlock.id === 'turn-left') {
+              const dirs: ('right' | 'down' | 'left' | 'up')[] = ['right', 'down', 'left', 'up'];
+              const current = dirs.indexOf(currentDir);
+              currentDir = dirs[(current - 1 + 4) % 4];
+              setRobotDir(currentDir);
+              await new Promise(resolve => setTimeout(resolve, 300));
+            } else if (repeatBlock.id.startsWith('wait-')) {
+              const waitTime = parseInt(repeatBlock.id.split('-')[1]) || 1;
+              await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+            }
+          }
+        }
+        // Skip the blocks that were repeated
+        i += blocksToRepeat.length;
+      } else if (block.id.startsWith('wait-')) {
+        const waitTime = parseInt(block.id.split('-')[1]) || 1;
+        await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
       }
     }
     
@@ -304,19 +392,20 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
       
       <div className="bg-gray-900 rounded-lg p-4">
         <div className="grid grid-cols-4 gap-1 max-w-xs mx-auto">
-          {grid.map((row, rowIndex) => 
+          {levelGrid.map((row, rowIndex) => 
             row.map((cell, colIndex) => {
               const isRobot = rowIndex === robotY && colIndex === robotX;
+              const cellContent = isRobot ? '🤖' : cell;
               return (
                 <div 
                   key={`${rowIndex}-${colIndex}`}
-                  className={`w-12 h-12 flex items-center justify-center text-2xl border border-gray-600 rounded ${
+                  className={`w-12 h-12 flex items-center justify-center text-2xl border border-gray-600 rounded relative ${
                     isRobot ? 'bg-blue-500 animate-pulse' : 'bg-gray-800'
                   }`}
                 >
-                  {isRobot ? '🤖' : cell}
+                  {cellContent}
                   {isRobot && (
-                    <div className="absolute -top-1 -right-1 text-xs">
+                    <div className="absolute -top-1 -right-1 text-xs bg-blue-600 rounded-full px-1">
                       {robotDir === 'right' && '→'}
                       {robotDir === 'left' && '←'}
                       {robotDir === 'up' && '↑'}
@@ -366,39 +455,228 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
 // Drag and Drop Coding Interface Component
 const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeChange: (code: CodeBlock[]) => void }) => {
   const [draggedBlock, setDraggedBlock] = useState<CodeBlock | null>(null);
+  const [draggedFromIndex, setDraggedFromIndex] = useState<number | null>(null);
+  const [draggedFromPath, setDraggedFromPath] = useState<number[] | null>(null);
   const [codeSequence, setCodeSequence] = useState<CodeBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [dragOverPath, setDragOverPath] = useState<number[] | null>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
-  const handleDragStart = (e: React.DragEvent, block: CodeBlock) => {
+  // Get repeat count from block id
+  const getRepeatCount = (blockId: string): number => {
+    if (blockId.includes('repeat-3')) return 3;
+    if (blockId.includes('repeat-5')) return 5;
+    return 0;
+  };
+
+  // Flatten code blocks for simulation (expand repeat blocks)
+  const flattenCodeBlocks = (blocks: CodeBlock[]): CodeBlock[] => {
+    const result: CodeBlock[] = [];
+    for (const block of blocks) {
+      if (block.type === 'repeat' && block.children && block.children.length > 0) {
+        const repeatCount = getRepeatCount(block.id);
+        for (let i = 0; i < repeatCount; i++) {
+          result.push(...flattenCodeBlocks(block.children));
+        }
+      } else {
+        result.push(block);
+      }
+    }
+    return result;
+  };
+
+  const handleDragStart = (e: React.DragEvent, block: CodeBlock, index?: number, path?: number[]) => {
     setDraggedBlock(block);
     setIsDragging(true);
+    setDraggedFromIndex(index ?? null);
+    setDraggedFromPath(path ?? null);
     e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', ''); // Required for Firefox
   };
 
   const handleDragEnd = () => {
     setDraggedBlock(null);
     setIsDragging(false);
+    setDraggedFromIndex(null);
+    setDraggedFromPath(null);
+    setDragOverIndex(null);
+    setDragOverPath(null);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, index?: number, path?: number[]) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index ?? null);
+    setDragOverPath(path ?? null);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (draggedBlock) {
-      const newCodeSequence = [...codeSequence, { ...draggedBlock, id: `${draggedBlock.id}-${Date.now()}` }];
-      setCodeSequence(newCodeSequence);
-      onCodeChange(newCodeSequence);
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+    setDragOverPath(null);
+  };
+
+  const insertBlockAtPath = (blocks: CodeBlock[], block: CodeBlock, insertIndex: number, insertPath: number[]): CodeBlock[] => {
+    // Deep clone to avoid mutation
+    const newBlocks = JSON.parse(JSON.stringify(blocks)) as CodeBlock[];
+    const newBlock = { ...block, id: `${block.id}-${Date.now()}` };
+    
+    if (insertPath.length === 0) {
+      // Insert at top level
+      const clampedIndex = Math.max(0, Math.min(insertIndex, newBlocks.length));
+      newBlocks.splice(clampedIndex, 0, newBlock);
+      return newBlocks;
     }
+    
+    // Navigate to nested path and insert
+    let current = newBlocks;
+    for (let i = 0; i < insertPath.length - 1; i++) {
+      const pathIndex = insertPath[i];
+      if (current[pathIndex] && current[pathIndex].children) {
+        current = current[pathIndex].children!;
+      } else {
+        return newBlocks; // Invalid path
+      }
+    }
+    
+    const finalIndex = insertPath[insertPath.length - 1];
+    if (finalIndex < current.length) {
+      current.splice(finalIndex, 0, newBlock);
+    } else {
+      current.push(newBlock);
+    }
+    
+    return newBlocks;
+  };
+
+  const removeBlockAtPath = (blocks: CodeBlock[], removeIndex: number, removePath: number[]): CodeBlock[] => {
+    if (removePath.length === 0) {
+      return blocks.filter((_, i) => i !== removeIndex);
+    }
+    
+    // Deep clone to avoid mutation
+    const newBlocks = JSON.parse(JSON.stringify(blocks)) as CodeBlock[];
+    
+    // Navigate to the parent block
+    let current = newBlocks;
+    for (let i = 0; i < removePath.length - 1; i++) {
+      const pathIndex = removePath[i];
+      if (current[pathIndex] && current[pathIndex].children) {
+        current = current[pathIndex].children!;
+      } else {
+        return newBlocks; // Invalid path
+      }
+    }
+    
+    // Remove the block from the children array
+    const finalIndex = removePath[removePath.length - 1];
+    if (current.length > finalIndex) {
+      current.splice(finalIndex, 1);
+    }
+    
+    return newBlocks;
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex?: number, dropPath?: number[]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!draggedBlock) return;
+    
+    // Deep clone to avoid mutation
+    let newCodeSequence = JSON.parse(JSON.stringify(codeSequence)) as CodeBlock[];
+    const insertPath = dropPath || [];
+    
+    // If dragging from within editor, remove from original position first
+    let adjustInsertIndex = 0;
+    if (draggedFromIndex !== null && draggedFromPath !== null) {
+      const removePath = draggedFromPath;
+      const removeIndex = draggedFromIndex;
+      
+      // Don't allow dropping on itself
+      if (JSON.stringify(dropPath || []) === JSON.stringify(removePath) && 
+          dropIndex === removeIndex) {
+        setDraggedBlock(null);
+        setIsDragging(false);
+        setDraggedFromIndex(null);
+        setDraggedFromPath(null);
+        setDragOverIndex(null);
+        setDragOverPath(null);
+        return;
+      }
+      
+      // Check if we need to adjust the insert index
+      if (removePath.length === 0 && dropPath && dropPath.length === 0 && removeIndex < (dropIndex ?? newCodeSequence.length)) {
+        adjustInsertIndex = -1;
+      }
+      
+      newCodeSequence = removeBlockAtPath(newCodeSequence, removeIndex, removePath);
+    }
+    
+    const insertIndex = (dropIndex !== undefined ? dropIndex + adjustInsertIndex : newCodeSequence.length);
+    
+    // Special handling for repeat blocks - they should wrap blocks dropped into them
+    if (draggedBlock.type === 'repeat') {
+      const repeatBlock: CodeBlock = {
+        ...draggedBlock,
+        id: `${draggedBlock.id}-${Date.now()}`,
+        children: []
+      };
+      newCodeSequence.splice(insertIndex, 0, repeatBlock);
+    } else {
+      // Check if dropping into a repeat block
+      if (dropPath && dropPath.length > 0) {
+        // Navigate to the repeat block
+        let target = newCodeSequence;
+        let validPath = true;
+        for (let i = 0; i < dropPath.length - 1; i++) {
+          const idx = dropPath[i];
+          if (target[idx] && target[idx].children) {
+            target = target[idx].children!;
+          } else {
+            validPath = false;
+            break;
+          }
+        }
+        
+        if (validPath) {
+          const targetIdx = dropPath[dropPath.length - 1];
+          if (target[targetIdx] && target[targetIdx].type === 'repeat') {
+            // Dropping into repeat block - add to children
+            if (!target[targetIdx].children) {
+              target[targetIdx].children = [];
+            }
+            target[targetIdx].children!.push({ 
+              ...draggedBlock, 
+              id: `${draggedBlock.id}-${Date.now()}` 
+            });
+          } else {
+            // Not dropping into repeat, insert at position
+            newCodeSequence = insertBlockAtPath(newCodeSequence, draggedBlock, insertIndex, insertPath);
+          }
+        } else {
+          // Invalid path, insert at top level
+          newCodeSequence = insertBlockAtPath(newCodeSequence, draggedBlock, insertIndex, []);
+        }
+      } else {
+        // Dropping at top level
+        newCodeSequence = insertBlockAtPath(newCodeSequence, draggedBlock, insertIndex, insertPath);
+      }
+    }
+    
+    setCodeSequence(newCodeSequence);
+    onCodeChange(newCodeSequence);
     setDraggedBlock(null);
     setIsDragging(false);
+    setDraggedFromIndex(null);
+    setDraggedFromPath(null);
+    setDragOverIndex(null);
+    setDragOverPath(null);
   };
 
-  const removeBlock = (index: number) => {
-    const newCodeSequence = codeSequence.filter((_, i) => i !== index);
+  const removeBlock = (index: number, path: number[] = []) => {
+    const newCodeSequence = removeBlockAtPath(codeSequence, index, path);
     setCodeSequence(newCodeSequence);
     onCodeChange(newCodeSequence);
   };
@@ -406,6 +684,112 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
   const clearCode = () => {
     setCodeSequence([]);
     onCodeChange([]);
+  };
+
+  // Recursive component to render blocks with nesting
+  const renderBlock = (block: CodeBlock, index: number, path: number[] = [], isInRepeat = false) => {
+    const isRepeat = block.type === 'repeat';
+    const isDragged = draggedFromIndex === index && JSON.stringify(draggedFromPath) === JSON.stringify(path);
+    const isDragOver = dragOverIndex === index && JSON.stringify(dragOverPath) === JSON.stringify(path);
+    
+    if (isRepeat) {
+      return (
+        <div
+          key={`${block.id}-${index}`}
+          className="relative"
+        >
+          <div className={`${block.color} text-white rounded-lg border-2 ${
+            (isDragOver || (dragOverPath && JSON.stringify([...path, index]) === JSON.stringify(dragOverPath))) 
+              ? 'border-yellow-400' : 'border-purple-600'
+          } ${isDragged ? 'opacity-50' : ''}`}>
+            {/* Repeat block header */}
+            <div
+              draggable
+              onDragStart={(e) => handleDragStart(e, block, index, path)}
+              onDragEnd={handleDragEnd}
+              className="p-3 flex items-center space-x-2 font-bold text-sm cursor-grab active:cursor-grabbing"
+            >
+              <span className="text-lg">{block.icon}</span>
+              <span>{block.label}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeBlock(index, path);
+                }}
+                className="text-red-300 hover:text-red-100 ml-auto"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* Repeat block children container */}
+            <div 
+              className={`min-h-12 p-2 rounded-b-lg border-t-2 ${
+                (dragOverPath && JSON.stringify([...path, index]) === JSON.stringify(dragOverPath))
+                  ? 'bg-yellow-400/20 border-yellow-400' 
+                  : 'bg-purple-600/20 border-purple-600/50'
+              }`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (draggedBlock && draggedBlock.type !== 'repeat') {
+                  setDragOverPath([...path, index]);
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (draggedBlock && draggedBlock.type !== 'repeat') {
+                  handleDrop(e, undefined, [...path, index]);
+                }
+              }}
+            >
+              {block.children && block.children.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {block.children.map((child, childIndex) => 
+                    renderBlock(child, childIndex, [...path, index], true)
+                  )}
+                </div>
+              ) : (
+                <div className="text-gray-400 text-xs text-center py-2">
+                  Drop blocks here
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={`${block.id}-${index}`}
+          draggable
+          onDragStart={(e) => handleDragStart(e, block, index, path)}
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDragOver(e, index, path);
+          }}
+          onDrop={(e) => handleDrop(e, index, path)}
+          className={`${block.color} text-white p-3 rounded-lg flex items-center space-x-2 font-bold text-sm cursor-grab active:cursor-grabbing ${
+            isDragOver ? 'ring-2 ring-yellow-400' : ''
+          } ${isDragged ? 'opacity-50' : ''} hover:opacity-90 transition-opacity`}
+        >
+          <span className="text-lg">{block.icon}</span>
+          <span>{block.label}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              removeBlock(index, path);
+            }}
+            className="text-red-300 hover:text-red-100 ml-auto"
+          >
+            ×
+          </button>
+        </div>
+      );
+    }
   };
 
   return (
@@ -447,8 +831,9 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
         
         <div
           ref={dropZoneRef}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
+          onDragOver={(e) => handleDragOver(e)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e)}
           className={`min-h-32 border-2 border-dashed rounded-lg p-4 ${
             isDragging ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600'
           }`}
@@ -459,29 +844,15 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
               <p>Drag code blocks here to build your program!</p>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {codeSequence.map((block, index) => (
-                <div
-                  key={`${block.id}-${index}`}
-                  className={`${block.color} text-white p-3 rounded-lg flex items-center space-x-2 font-bold text-sm`}
-                >
-                  <span className="text-lg">{block.icon}</span>
-                  <span>{block.label}</span>
-                  <button
-                    onClick={() => removeBlock(index)}
-                    className="text-red-300 hover:text-red-100 ml-2"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+            <div className="flex flex-col gap-2">
+              {codeSequence.map((block, index) => renderBlock(block, index, []))}
             </div>
           )}
         </div>
       </div>
 
       {/* Robot Simulation */}
-      <RobotSimulation levelId={levelId} codeBlocks={codeSequence} />
+      <RobotSimulation levelId={levelId} codeBlocks={flattenCodeBlocks(codeSequence)} />
     </div>
   );
 };
