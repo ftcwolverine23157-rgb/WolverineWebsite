@@ -24,7 +24,7 @@ const teamMembers = [
   },
   {
     "name": "Dhruv Jindal",
-    "role": "Outreach Captain",
+    "role": "Outreach Lead",
     "description": "Dhruv heads our outreach initiatives, focusing on connecting with the community, fundraising, and event planning to expand our impact.",
     "skills": ["Leadership", "Strategy", "Fundraising", "Event Planning", "Social Media"],
     "email": "dhrjin211@gmail.com",
