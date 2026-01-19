@@ -59,7 +59,7 @@ const teamMembers = [
     "role": "Hardware Lead",
     "description": "Varun leads the hardware team, specializing in robot assembly, mechanical problem-solving, and ensuring robust design.",
     "skills": ["Mechanical Design", "Assembly", "Problem-Solving", "Prototyping"],
-    "email": "varun@ftcwolverines.com"
+    "email": "varun@ftcwolverines.com",
     "photo": varunPhoto
   },
   {
