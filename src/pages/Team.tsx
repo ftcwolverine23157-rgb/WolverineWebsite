@@ -11,6 +11,7 @@ import anandPhoto from '@/assets/anandPhoto.png';
 import aaravPhoto from '@/assets/aaravPhoto.png';
 import meeraPhoto from '@/assets/meeraPhoto.png';
 import gautamPhoto from '@/assets/gautamPhoto.png';
+import varunPhoto from '@/assets/varun.png';
 const teamMembers = [
 
   {
@@ -59,6 +60,7 @@ const teamMembers = [
     "description": "Varun leads the hardware team, specializing in robot assembly, mechanical problem-solving, and ensuring robust design.",
     "skills": ["Mechanical Design", "Assembly", "Problem-Solving", "Prototyping"],
     "email": "varun@ftcwolverines.com"
+    "photo": varunPhoto
   },
   {
     "name": "Aarav",
