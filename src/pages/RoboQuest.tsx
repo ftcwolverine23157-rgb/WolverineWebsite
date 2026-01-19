@@ -356,9 +356,9 @@ const RobotSimulation = ({ levelId, codeBlocks }: { levelId: number, codeBlocks:
     setIsRunning(true);
     
     // Reset robot position
-    let currentX = startX;
-    let currentY = startY;
-    let currentDir: 'right' | 'down' | 'left' | 'up' = startDir as 'right' | 'down' | 'left' | 'up';
+    const currentX = startX;
+    const currentY = startY;
+    const currentDir: 'right' | 'down' | 'left' | 'up' = startDir as 'right' | 'down' | 'left' | 'up';
     
     // Update React state for display
     setRobotX(startX);
@@ -766,7 +766,7 @@ const CodingInterface = ({ levelId, onCodeChange }: { levelId: number, onCodeCha
                       for (let i = 0; i < path.length; i++) {
                         target = target[path[i]].children || [];
                       }
-                      if (!target[index].params) target[index].params = {} as any;
+                      if (!target[index].params) target[index].params = {} as unknown;
                       target[index].params!.repeatCount = val;
                       setCodeSequence(newBlocks);
                       onCodeChange(newBlocks);
